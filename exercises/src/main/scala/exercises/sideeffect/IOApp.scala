@@ -1,6 +1,6 @@
 package exercises.sideeffect
 
-import answers.sideeffect.IOAnswers.IO
+import exercises.sideeffect.IOExercises.IO
 
 trait IOApp extends App {
   def main(): IO[Unit]

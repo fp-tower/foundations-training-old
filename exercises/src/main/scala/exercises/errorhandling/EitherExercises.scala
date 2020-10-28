@@ -116,7 +116,7 @@ object EitherExercises {
   // 3d. Implement `validateUser` which validates both username and country using
   // `validateUsername` and `validateCountry`.
   // If both username and country are invalid, only return the username error.
-  // What should be the return type of `validateUser`? You may need to create or modify some types.
+  // What should be the return type of `validateUser`? You may need to create or modify some answers.types.
   def validateUser(username: String, country: String) = ???
 
   def validateCountry(country: String): Either[CountryError, Country] =

@@ -103,7 +103,7 @@ object IOExercises {
     // 2a. Implement `map`
     // such as succeed(x).map(f) == succeed(f(x))
     // and     fail(e).map(f) == fail(e)
-    // `f` must be a pure function, you should NOT use it to do another side effect e.g. succeed(4).map(println).
+    // `f` must be a pure answers.function, you should NOT use it to do another side effect e.g. succeed(4).map(println).
     def map[B](f: A => B): IO[B] =
       ???
 
@@ -208,8 +208,8 @@ object IOExercises {
     IO.notImplemented
 
   // 3c. Implement `readInt` which reads an Int from the command line
-  // such as readInt.unsafeRun() == 32 if user types "32"
-  // and     readInt.unsafeRun() throws an exception if user types "hello"
+  // such as readInt.unsafeRun() == 32 if user answers.types "32"
+  // and     readInt.unsafeRun() throws an exception if user answers.types "hello"
   // use `parseInt` and `readLine`
   val readInt: IO[Int] =
     IO.notImplemented

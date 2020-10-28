@@ -27,7 +27,7 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
 
 lazy val foundation = project
   .in(file("."))
-  .settings(moduleName := "foundation")
+  .settings(moduleName := "foundations-training")
   .settings(baseSettings: _*)
   .aggregate(exercises, answers)
   .dependsOn(exercises, answers)
