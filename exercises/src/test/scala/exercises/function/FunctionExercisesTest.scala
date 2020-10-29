@@ -6,42 +6,26 @@ import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
 class FunctionExercisesTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks {
 
-  ////////////////////////////
-  // 1. first class functions
-  ////////////////////////////
+  /////////////////////////////////////////////////////
+  // Exercise 1: String API with higher-order functions
+  /////////////////////////////////////////////////////
 
-  ignore("isEven") {
-    assert(isEven(2) == true)
-    assert(isEven(3) == false)
-
-    assert(isEven(-2) == true)
-    assert(isEven(-3) == false)
+  // replace `ignore` by `test` to enable the test
+  ignore("selectDigits examples") {
+    assert(selectDigits("hello4world-80") == "480")
+    assert(selectDigits("welcome") == "")
   }
 
-  ignore("isEvenVal") {
-    forAll { (x: Int) =>
-      assert(isEvenVal(x) == isEven(x))
+  // replace `ignore` by `test` to enable the test
+  ignore("selectDigits length is smaller") {
+    forAll { (text: String) =>
+      assert(selectDigits(text).length <= text.length)
     }
   }
 
-  test("isEvenDefToVal") {}
-
-  test("move") {}
-
-  ////////////////////////////
-  // 2. polymorphic functions
-  ////////////////////////////
-
-  ignore("identity") {
-    assert(identity(3) == 3)
-    assert(identity("foo") == "foo")
-  }
-
-  ignore("const") {
-    assert(const("foo")(5) == "foo")
-    assert(const(5)("foo") == 5)
-    assert(List(1, 2, 3).map(const(0)) == List(0, 0, 0))
-  }
+  ///////////////////////
+  // Exercise 2: Point
+  ///////////////////////
 
   ///////////////////////////
   // 3. Recursion & Laziness

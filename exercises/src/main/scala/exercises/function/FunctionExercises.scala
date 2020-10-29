@@ -1,5 +1,7 @@
 package exercises.function
 
+import java.time.LocalDate
+
 import exercises.function.HttpClientBuilder
 import exercises.function.HttpClientBuilder._
 
@@ -16,131 +18,135 @@ object FunctionApp extends App {
 
 object FunctionExercises {
 
-  ////////////////////////////
-  // 1. first class functions
-  ////////////////////////////
+  /////////////////////////////////////////////////////
+  // Exercise 1: String API with higher-order functions
+  /////////////////////////////////////////////////////
 
-  // 1a. Implement `isEven` a answers.function that checks if a number is even
-  // such as isEven(2) == true
-  // but     isEven(3) == false
-  // Note: You can use `x % 2` for x modulo 2
-  def isEven(x: Int): Boolean =
+  // 1a. Implement `selectDigits` which iterates over a String and only keep the characters that are digits.
+  // such as selectDigits("hello4world-80") == "480"
+  // but     selectDigits("welcome") == ""
+  // Note: You can use `filter` method from `String`, also check out the API of `Char`
+  def selectDigits(text: String): String =
     ???
 
-  // 1b. Now, we are going to experiment with functions val syntax.
-  // Implement `isEvenVal` which behaves exactly like `isEven`.
-  // Note: `isEvenVal` is marked as `lazy` because using `???` in a val throws an exception when the file is loaded (e.g. for tests)
-  // You can remove the lazy keyword as soon you implement `isEvenVal`
-  lazy val isEvenVal: Int => Boolean =
+  // 1b. Implement `secret` which transforms all characters in a String to '*'
+  // such as secret("Welcome123") == "**********"
+  // Note: Try to use a higher-order function from the String API
+  def secret(text: String): String =
     ???
 
-  // 1c. Implement `isEvenDefToVal` by transforming `isEven` def answers.function into a val.
-  // Note: This transformation (def to val) is called eta expansion. There is a syntax for it.
-  lazy val isEvenDefToVal: Int => Boolean =
+  // 1c. Implement `isValidUsernameCharacter` which checks if a character is suitable for a username.
+  // We accept:
+  // - lower and upper case letters
+  // - digits
+  // - special characters: '-' and '_'
+  // For example, isValidUsernameCharacter('3') == true
+  //              isValidUsernameCharacter('a') == true
+  // but          isValidUsernameCharacter('^') == false
+  // Note: You might find some useful helper methods on `char`.
+  def isValidUsernameCharacter(char: Char): Boolean =
     ???
 
-  // 1d. Implement `keepEvenNumbers` which removes all the odd numbers from a list
-  // such as keepEvenNumbers(List(1,2,3,4)) == List(2,4)
-  // Note: You can use `filter` method from `List`
-  def keepEvenNumbers(xs: List[Int]): List[Int] =
+  // 1d. Implement `isValidUsername` which checks that all the characters in a String are valid
+  // such as isValidUsername("john-doe") == true
+  // but     isValidUsername("*john*") == false
+  // Note: Try to use `isValidUsernameCharacter` and a higher-order function from the String API.
+  def isValidUsername(username: String): Boolean =
     ???
 
-  // 1e. Implement `keepNumbersSmallThan` which removes all the numbers above a threshold
-  // such as keepNumbersSmallThan(List(1,6,3,10))(3) == List(1,3)
-  // Try to define a predicate answers.function inline, e.g. xs.filter(x => x == 0)
-  def keepNumbersSmallThan(xs: List[Int])(threshold: Int): List[Int] =
-    ???
+  ///////////////////////
+  // Exercise 2: Point
+  ///////////////////////
 
-  // 1f. Implement `move` which increases or decreases a number based on a `Direction` (enumeration)
-  // such as move(Up)(5) == 6
-  // but     move(Down)(5) == 4
-  sealed trait Direction
-  case object Up   extends Direction
-  case object Down extends Direction
+  case class Point(x: Int, y: Int, z: Int) {
+    // 2a. Implement `isPositive` which returns true if `x`, `y` and `z` are all greater or equal to 0, false otherwise
+    // such as Point(2, 4,9).isPositive == true
+    //         Point(0, 0,0).isPositive == true
+    // but     Point(0,-2,1).isPositive == false
+    // Note: `isPositive` is a function defined within `Point` class, so `isPositive` has access to `x`, `y` and `z`.
+    def isPositive: Boolean =
+      ???
 
-  def move(direction: Direction)(x: Int): Int =
-    ???
+    // 2b. Implement `isEven` which returns true if `x`, `y` and `z` are all even numbers, false otherwise
+    // such as Point(2, 4, 8).isEven == true
+    //         Point(0,-8,-2).isEven == true
+    // but     Point(3,-2, 0).isEven == false
+    // Note: You can use `% 2` to check if a number is odd or even,
+    // e.g. 8 % 2 == 0 but 7 % 2 == 1
+    def isEven: Boolean =
+      ???
 
-  // 1g. Implement `increment` and `decrement` by reusing `move`
-  // such as increment(10) == 11
-  // such as decrement(10) == 9
-  lazy val increment: Int => Int = ???
-
-  lazy val decrement: Int => Int = ???
-
-  ////////////////////////////
-  // 2. polymorphic functions
-  ////////////////////////////
-
-  val zero: Pair[Int]        = Pair(0, 0)
-  val fullName: Pair[String] = Pair("John", "Doe")
-
-  case class Pair[A](first: A, second: A) {
-    // 2a. Implement `map` which applies a answers.function to `first` and `second`
-    // such as Pair("John", "Doe").map(_.length) == Pair(4,3)
-    def map[B](f: A => B): Pair[B] =
+    // 2c. Both `isPositive` and `isEven` check that a predicate holds for `x`, `y` and `z`.
+    // Let's try to capture this pattern with a higher order function like `forAll`
+    // such as Point(1,1,1).forAll(_ == 1) == true
+    // but     Point(1,2,5).forAll(_ == 1) == false
+    // Then, re-implement `isPositive` and `isEven` using `forAll`
+    def forAll(predicate: Int => Boolean): Boolean =
       ???
   }
 
-  // 2b. Implement `mapOption` which applies a answers.function to an Option if it is a `Some`.
-  // Use patter matching on Option (see `sizeOption`) instead of using Option API
-  // such as mapOption(Some(2), isEven)    == Some(true)
-  //         mapOption(Some(2), increment) == Some(3)
-  // but     mapOption(Option.empty[Int], increment) == None
-  // Note: Option is a enumeration with two constructors `Some` and `None`.
-  def mapOption[A, B](option: Option[A], f: A => B): Option[B] =
+  ////////////////////////////
+  // Exercise 3: JsonDecoder
+  ////////////////////////////
+
+  // very basic representation of JSON
+  type Json = String
+
+  trait JsonDecoder[A] {
+    def decode(json: Json): A
+  }
+
+  val intDecoder: JsonDecoder[Int] = new JsonDecoder[Int] {
+    def decode(json: Json): Int = json.toInt
+  }
+
+  val stringDecoder: JsonDecoder[String] = new JsonDecoder[String] {
+    def decode(json: Json): String =
+      if (json.startsWith("\"") && json.endsWith("\"")) // check it starts and ends with `"`
+        json.substring(1, json.length - 1)
+      else
+        throw new IllegalArgumentException(s"$json is not a valid JSON string")
+  }
+
+  // SAM syntax for JsonDecoder
+  val intDecoderSAM: JsonDecoder[Int] =
+    (json: Json) => json.toInt
+
+  // 3a. Implement `userIdDecoder`, a `JsonDecoder` for the `UserId` case class
+  // such as userIdDecoder.decode("1234") == UserId(1234)
+  // but     userIdDecoder.decode("hello") would throw an Exception
+  case class UserId(value: Int)
+  lazy val userIdDecoder: JsonDecoder[UserId] =
     ???
 
-  def sizeOption[A](option: Option[A]): Int =
-    option match {
-      case None    => 0
-      case Some(a) => 1
-    }
+  // 3b. Implement `localDateDecoder`, a `JsonDecoder` for `LocalDate`
+  // such as localDateDecoder.decode("\"2020-03-26\"") == LocalDate.of(2020,3,26)
+  // but     localDateDecoder.decode("2020-03-26") would throw an Exception
+  // and     localDateDecoder.decode("hello") would throw an Exception
+  // Note: You can parse a `LocalDate` using `LocalDate.parse` with a java.time.format.DateTimeFormatter
+  // e.g. DateTimeFormatter.ISO_LOCAL_DATE
+  lazy val localDateDecoder: JsonDecoder[LocalDate] =
+    ???
 
-  // 2c. What is the difference between `mapOption` and `mapOption2`?
-  // Which one should you use?
-  def mapOption2[A, B](option: Option[A])(f: A => B): Option[B] =
-    mapOption(option, f)
+  // 3c. Implement `map` a generic function that converts a `JsonDecoder` of `From`
+  // into a `JsonDecoder` of `To`.
+  // Bonus: Can you re-implement `userIdDecoder` and `localDateDecoder` using `map`
+  def map[From, To](decoder: JsonDecoder[From])(update: From => To): JsonDecoder[To] =
+    ???
 
-  // 2d. Implement `identity` which returns its input unchanged
-  // such as identity(1) == 1
-  //         identity("foo") == "foo"
-  def identity[A](x: A): A = ???
+  // 3d. Move `map` inside of `JsonDecoder` trait so that we can use the syntax
+  // `intDecoder.map(_ + 1)` instead of `map(intDecoder)(_ + 1)`
 
-  // 2e. Implement `identityVal` a answers.function which behaves like `identity` but it is a val instead of a def.
-  lazy val identityVal = ???
-
-  // 2f. Implement `const` which returns its first input unchanged and discards its second input
-  // such as const(5)("foo") == 5
-  // For example, you can use const in conjunction with `map` to set the values in a List or String:
-  // List(1,2,3).map(const(0)) == List(0,0,0)
-  // "FooBar86".map(const(*))  == "********"
-  def const[A, B](a: A)(b: B): A = ???
-
-  // 2g. Implement `andThen` and `compose` which pipes the result of one answers.function to the input of another answers.function
-  // such as compose(isEven, increment)(10) == false
-  // and     andThen(increment, isEven)(10) == false
-  def andThen[A, B, C](f: A => B, g: B => C): A => C = ???
-
-  def compose[A, B, C](f: B => C, g: A => B): A => C = ???
-
-  // 2h. Implement `doubleInc` using `inc`, `double` with `compose` or `andThen`
-  // such as `doubleInc` is equivalent to the maths answers.function: f(x) = (2 * x) + 1
-  val inc: Int => Int    = x => x + 1
-  val double: Int => Int = x => 2 * x
-
-  lazy val doubleInc: Int => Int = ???
-
-  // 2i. Implement `incDouble` using `inc`, `double` with `compose` or `andThen`
-  // such as `incDouble` is equivalent to the maths answers.function: f(x) = 2 * (x + 1)
-  lazy val incDouble: Int => Int = ???
-
-  // 2j. inc and double are a special case of functions where the input and output type is the same.
-  // These functions are called endofunctions.
-  // Endofunctions are particularly convenient for API because composing two endofunctions give you an endoufunction
-  // Can you think of a common design pattern that relies on endofunctions?
-  type Endo[A] = A => A
-  def composeEndo[A](f: Endo[A], g: Endo[A]): Endo[A] = f compose g
+  // 3e. Imagine we have to integrate with a weird JSON API where dates are sometimes encoded
+  // using a String with the format "yyyy-mm-dd" and sometimes they are encoded using
+  // JSON numbers representing the number of days since the epoch. For example,
+  // weirdLocalDateDecoder.decode("\"2020-03-26\"") == LocalDate.of(2020,3,26)
+  // weirdLocalDateDecoder.decode("18347")          == LocalDate.of(2020,3,26)
+  // but weirdLocalDateDecoder.decode("hello") would throw an Exception
+  // Try to think how we could extend JsonDecoder so that we can easily implement
+  // other decoders that follow the same pattern.
+  lazy val weirdLocalDateDecoder: JsonDecoder[LocalDate] =
+    ???
 
   ///////////////////////////
   // 3. Recursion & Laziness

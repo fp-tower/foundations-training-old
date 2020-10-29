@@ -8,38 +8,42 @@ import scala.concurrent.duration._
 
 object FunctionAnswers {
 
-  ////////////////////////////
-  // 1. first class functions
-  ////////////////////////////
+  /////////////////////////////////////////////////////
+  // Exercise 1: String API with higher-order functions
+  /////////////////////////////////////////////////////
 
-  def isEven(x: Int): Boolean =
-    x % 2 == 0
+  def selectDigits(text: String): String =
+    text.filter(_.isDigit)
 
-  val isEvenVal: Int => Boolean =
-    (x: Int) => x % 2 == 0
+  def secret(text: String): String =
+    text.map(_ => '*')
 
-  val isEvenDefToVal: Int => Boolean =
-    isEven _ // or just isEven
+  def isValidUsernameCharacter(char: Char): Boolean =
+    char.isLetterOrDigit || (char == '-') || (char == '_')
 
-  def keepEvenNumbers(xs: List[Int]): List[Int] =
-    xs.filter(isEven)
+  def isValidUsername(username: String): Boolean =
+    username.forall(isValidUsernameCharacter)
 
-  def keepNumbersSmallThan(xs: List[Int])(threshold: Int): List[Int] =
-    xs.filter(_ <= threshold)
+  ///////////////////////
+  // Exercise 2: Point3
+  ///////////////////////
 
-  sealed trait Direction
-  case object Up   extends Direction
-  case object Down extends Direction
+  case class Point(x: Int, y: Int, z: Int) {
+    def isPositive: Boolean =
+      x >= 0 && y >= 0 && z >= 0
 
-  def move(direction: Direction)(x: Int): Int =
-    direction match {
-      case Up   => x + 1
-      case Down => x - 1
-    }
+    def isEven: Boolean =
+      (x % 2 == 0) && (y % 2 == 0) && (z % 2 == 0)
 
-  val increment: Int => Int = move(Up)
+    def forAll(predicate: Int => Boolean): Boolean =
+      predicate(x) && predicate(y) && predicate(z)
 
-  val decrement: Int => Int = move(Down)
+    def isPositiveForAll: Boolean =
+      forAll(_ >= 0)
+
+    def isEvenForAll: Boolean =
+      forAll(_ % 2 == 0)
+  }
 
   ////////////////////////////
   // 2. polymorphic functions
