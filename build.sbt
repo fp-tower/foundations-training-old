@@ -25,7 +25,7 @@ lazy val baseSettings: Seq[Setting[_]] = Seq(
   )
 )
 
-lazy val foundation = project
+lazy val `foundations-training` = project
   .in(file("."))
   .settings(moduleName := "foundations-training")
   .settings(baseSettings: _*)
@@ -49,6 +49,3 @@ lazy val slides = project
     mdocOut := baseDirectory.value / "docs",
   )
   .enablePlugins(MdocPlugin)
-
-
-addCommandAlias("testAnswers", "answers/test")

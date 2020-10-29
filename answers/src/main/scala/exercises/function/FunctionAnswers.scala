@@ -1,10 +1,14 @@
 package exercises.function
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 import exercises.function.HttpClientBuilder._
 
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.concurrent.duration._
+import scala.util.{Failure, Success, Try}
 
 object FunctionAnswers {
 
@@ -43,6 +47,123 @@ object FunctionAnswers {
 
     def isEvenForAll: Boolean =
       forAll(_ % 2 == 0)
+  }
+
+  ////////////////////////////
+  // Exercise 3: JsonDecoder
+  ////////////////////////////
+
+  // very basic representation of JSON
+  type Json = String
+
+  trait JsonDecoder[A] { outer =>
+    def decode(json: Json): A
+
+    def map[To](update: A => To): JsonDecoder[To] =
+      new JsonDecoder[To] {
+        def decode(json: Json): To =
+          update(outer.decode(json))
+      }
+
+    def orElse(fallback: JsonDecoder[A]): JsonDecoder[A] =
+      (json: Json) =>
+        Try(outer.decode(json)) match {
+          case Failure(_)     => fallback.decode(json)
+          case Success(value) => value
+      }
+  }
+
+  object JsonDecoder {
+    def constant[A](value: A): JsonDecoder[A] = new JsonDecoder[A] {
+      def decode(json: Json): A = value
+    }
+
+    def fail[A](exception: Exception): JsonDecoder[A] = new JsonDecoder[A] {
+      def decode(json: Json): A =
+        throw exception
+    }
+  }
+
+  val intDecoder: JsonDecoder[Int] = new JsonDecoder[Int] {
+    def decode(json: Json): Int = json.toInt
+  }
+
+  val stringDecoder: JsonDecoder[String] = new JsonDecoder[String] {
+    def decode(json: Json): String =
+      if (json.startsWith("\"") && json.endsWith("\""))
+        json.substring(1, json.length - 1)
+      else
+        throw new IllegalArgumentException(s"$json is not a JSON string")
+  }
+
+  case class UserId(value: Int)
+  val userIdDecoder: JsonDecoder[UserId] =
+    (json: Json) => UserId(intDecoder.decode(json))
+
+  val localDateDecoder: JsonDecoder[LocalDate] =
+    (json: Json) => LocalDate.parse(stringDecoder.decode(json), DateTimeFormatter.ISO_LOCAL_DATE)
+
+  def map[From, To](decoder: JsonDecoder[From])(update: From => To): JsonDecoder[To] =
+    (json: Json) => update(decoder.decode(json))
+
+  val userIdDecoderV2: JsonDecoder[UserId] =
+    intDecoder.map(UserId)
+
+  val localDateDecoderV2: JsonDecoder[LocalDate] =
+    stringDecoder.map(LocalDate.parse(_, DateTimeFormatter.ISO_LOCAL_DATE))
+
+  val longDecoder: JsonDecoder[Long] =
+    (json: Json) => json.toLong
+
+  val longLocalDateDecoder: JsonDecoder[LocalDate] =
+    longDecoder.map(LocalDate.ofEpochDay)
+
+  val weirdLocalDateDecoder: JsonDecoder[LocalDate] =
+    localDateDecoderV2 orElse longLocalDateDecoder
+
+  def optionDecoder[A](decoder: JsonDecoder[A]): JsonDecoder[Option[A]] = {
+    case "null" => None
+    case other  => Some(decoder.decode(other))
+  }
+
+  trait SafeJsonDecoder[A] { self =>
+    def decode(json: Json): Either[String, A]
+
+    def map[To](update: A => To): SafeJsonDecoder[To] =
+      new SafeJsonDecoder[To] {
+        def decode(json: Json): Either[String, To] =
+          self.decode(json).map(update)
+      }
+
+    def orElse(other: SafeJsonDecoder[A]): SafeJsonDecoder[A] =
+      new SafeJsonDecoder[A] {
+        def decode(json: Json): Either[String, A] =
+          self.decode(json).orElse(other.decode(json))
+      }
+  }
+
+  object SafeJsonDecoder {
+    val int: SafeJsonDecoder[Int] =
+      (json: Json) => Try(json.toInt).toOption.toRight(s"Invalid JSON Int: $json")
+
+    val long: SafeJsonDecoder[Long] =
+      (json: Json) => Try(json.toLong).toOption.toRight(s"Invalid JSON Long: $json")
+
+    val string: SafeJsonDecoder[String] =
+      (json: Json) =>
+        if (json.startsWith("\"") && json.endsWith("\""))
+          Right(json.substring(1, json.length - 1))
+        else
+          Left(s"$json is not a JSON string")
+
+    val localDateInt: SafeJsonDecoder[LocalDate] =
+      long.map(LocalDate.ofEpochDay)
+
+    val localDateString: SafeJsonDecoder[LocalDate] =
+      string.map(LocalDate.parse(_, DateTimeFormatter.ISO_LOCAL_DATE))
+
+    val localDate: SafeJsonDecoder[LocalDate] =
+      localDateString.orElse(localDateInt)
   }
 
   ////////////////////////////
