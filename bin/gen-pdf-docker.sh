@@ -21,7 +21,7 @@ done
 
 for file in ${FILE_INPUT_REGEX:-*.html}
 do
- decktape remark "$file" "${file%.html}.pdf" --chrome-arg=--allow-file-access-from-files \
+ docker run --rm -t -v `pwd`:/slides astefanutti/decktape remark  "https://blog.fp-tower.com/foundations/$file" "${file%.html}.pdf" --chrome-arg=--allow-file-access-from-files \
   --screenshots --size 1920x1080 --screenshots-directory screenshots
 done
 

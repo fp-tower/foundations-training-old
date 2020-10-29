@@ -1,10 +1,10 @@
 language: scala
 
 scala:
-   - 2.13.0
+  - 2.13.3
 
 jdk:
-   - oraclejdk11
+  - oraclejdk11
 
 env:
   - NODE_VERSION="12.6.0"
@@ -13,30 +13,35 @@ before_install:
   - nvm install $NODE_VERSION
 
 cache:
-   directories:
-      - $HOME/.sbt/1.0/dependency
-      - $HOME/.sbt/boot/scala*
-      - $HOME/.sbt/launchers
-      - $HOME/.m2
-      - $HOME/.ivy2/cache
-      - $HOME/.coursier
-      - $HOME/.nvm
+  directories:
+    - $HOME/.sbt/1.0/dependency
+    - $HOME/.sbt/boot/scala*
+    - $HOME/.sbt/launchers
+    - $HOME/.m2
+    - $HOME/.ivy2/cache
+    - $HOME/.coursier
+    - $HOME/.nvm
 
 before_cache:
-   - find $HOME/.sbt -name "*.lock" -type f -delete
-   - find $HOME/.ivy2/cache -name "ivydata-*.properties" -type f -delete
-   - rm -rf $HOME/.ivy2/local
+  - find $HOME/.sbt -name "*.lock" -type f -delete
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -type f -delete
+  - rm -rf $HOME/.ivy2/local
 
 script:
-   - sbt ++$TRAVIS_SCALA_VERSION testAnswers
-   - npm install -g decktape
-   - bin/gen-pdf.sh
+  - sbt ++$TRAVIS_SCALA_VERSION test
+  - npm install -g decktape
+  - sbt slides/mdoc
+  - travis_wait bin/gen-pdf.sh -f "*.html"
+  - travis_wait bin/gen-pdf.sh -f "value-functions/*.html"
+  - travis_wait bin/gen-pdf.sh -f "generic-functions/*.html"
+  - travis_wait bin/gen-pdf.sh -f "data-processing/*.html"
+  - travis_wait bin/gen-pdf.sh -f "bonus/*.html"
 
 deploy:
-   provider: pages
-   local_dir: docs/
-   skip_cleanup: true
-   github_token: $GH_TOKEN
-   on:
-      branch: master
-      condition: $TRAVIS_PULL_REQUEST="false"
+  provider: pages
+  local_dir: docs/
+  skip_cleanup: true
+  github_token: $GH_TOKEN
+  on:
+    branch: master
+    condition: $TRAVIS_PULL_REQUEST="false"
