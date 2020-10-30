@@ -131,7 +131,7 @@ object FunctionExercises {
   // 3c. Implement `map` a generic function that converts a `JsonDecoder` of `From`
   // into a `JsonDecoder` of `To`.
   // Bonus: Can you re-implement `userIdDecoder` and `localDateDecoder` using `map`
-  def map[From, To](decoder: JsonDecoder[From])(update: From => To): JsonDecoder[To] =
+  def map[From, To](decoder: JsonDecoder[From], update: From => To): JsonDecoder[To] =
     ???
 
   // 3d. Move `map` inside of `JsonDecoder` trait so that we can use the syntax

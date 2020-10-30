@@ -549,28 +549,6 @@ List[User]
 ]
 
 ---
-# How to avoid duplication?
-
-
-.thirty-seven-left[
-<br>
-<br>
-<br>
-<br>
-```scala
-def size(list: List[Int]   ): Int
-
-def size(list: List[String]): Int
-
-def size(list: List[User]  ): Int
-```
-]
-
-.fifty-seven-right[
-<img src="img/foundation-training/parametric-list.svg" alt="Parametric list" style="width:600px;"/>
-]
-
----
 # Generic function
 
 
@@ -625,31 +603,15 @@ size(List("Hello", "World", "!"))
 ---
 class: center, middle
 
-# Two parametric rules
+# Parametric rule
 
 ---
-# 1. Generic functions accept .hl[ALL] types
+# All types must be treated .hl[IN THE SAME WAY]
 
 <br>
 
 ```scala
-def map[From, To](list: List[From])(update: From => To): List[To]
-```
-<br>
-
-```scala
-map[String, Int](List(...))(...)
-
-map[User, Address](List(...))(...)
-```
-
----
-# 2. All types must be treated .hl[IN THE SAME WAY]
-
-<br>
-
-```scala
-def map[From, To](list: List[From])(update: From => To): List[To] =
+def map[From, To](list: List[From], update: From => To): List[To] =
   list match {
     case ints   : List[Int]    => ...
     case strings: List[String] => ...
@@ -716,7 +678,7 @@ def format[A](value: A): String =
 ```
 ]
 
-.thirty-two--right[
+.thirty-two-right[
 ```scala mdoc
 format("Blue")
 format(123.123456)
@@ -840,7 +802,7 @@ class: center, middle
 <br>
 
 ```scala
-def map[From, To](list: List[From])(update: From => To): List[To]
+def map[From, To](list: List[From], update: From => To): List[To]
 ```
 
 --
@@ -866,7 +828,7 @@ def map[From, To](list: List[From])(update: From => To): List[To]
 <br>
 
 ```scala
-def map[From, To](list: List[From])(update: From => To): List[To] =
+def map[From, To](list: List[From], update: From => To): List[To] =
   list
 ```
 
@@ -876,7 +838,7 @@ def map[From, To](list: List[From])(update: From => To): List[To] =
 <br>
 
 ```scala mdoc:reset:fail
-def map[From, To](list: List[From])(update: From => To): List[To] =
+def map[From, To](list: List[From], update: From => To): List[To] =
   list
 ```
 
@@ -886,7 +848,7 @@ def map[From, To](list: List[From])(update: From => To): List[To] =
 <br>
 
 ```scala
-def map[A](list: List[A])(update: A => A): List[A] =
+def map[A](list: List[A], update: A => A): List[A] =
   list
 
 // success
@@ -898,7 +860,7 @@ def map[A](list: List[A])(update: A => A): List[A] =
 <br>
 
 ```scala
-def map(list: List[Int])(update: Int => Int): List[Int] =
+def map(list: List[Int], update: Int => Int): List[Int] =
   List(1, 2, 3)
 
 // success
@@ -911,21 +873,21 @@ def map(list: List[Int])(update: Int => Int): List[Int] =
 
 ```scala
 test("map"){
-  map(Nil)(_ => ???) shouldEqual Nil
+  map(Nil, _ => ???) shouldEqual Nil
 
-  map(List(1,2,3)    )(x => ???) shouldEqual ???
-  map(List(1,2,3,4,5))(x => ???) shouldEqual ???
+  map(List(1,2,3)    , x => ???) shouldEqual ???
+  map(List(1,2,3,4,5), x => ???) shouldEqual ???
 
-  map(List("Hello", "World")  )(x => ???) shouldEqual ???
-  map(List("a", "b", "c", "d"))(x => ???) shouldEqual ???
+  map(List("Hello", "World")  , x => ???) shouldEqual ???
+  map(List("a", "b", "c", "d"), x => ???) shouldEqual ???
 }
 ```
 
 --
 
-.sixty-seven-left[.center[
+.center[
 ## All types must be treated in the same way
-]]
+]
 
 ---
 # How can we test `map`?
@@ -934,22 +896,22 @@ test("map"){
 
 ```scala
 test("map"){
-  map(Nil)(_ => ???) shouldEqual Nil
+  map(Nil, _ => ???) shouldEqual Nil
 
-  map(List(1,2,3)    )(_ + 1) shouldEqual List(2,3,4)
-  map(List(1,2,3,4,5))(_ + 1) shouldEqual List(2,3,4,5,6)
+  map(List(1,2,3)    , _ + 1) shouldEqual List(2,3,4)
+  map(List(1,2,3,4,5), _ + 1) shouldEqual List(2,3,4,5,6)
 
-  map(List(1,2,3)    )(_ > 2) shouldEqual List(false,false,true)
-  map(List(1,2,3,4,5))(_ > 2) shouldEqual List(false,false,true,true,true)
+  map(List(1,2,3)    , _ > 2) shouldEqual List(false,false,true)
+  map(List(1,2,3,4,5), _ > 2) shouldEqual List(false,false,true,true,true)
 }
 ```
 
 
 --
 
-.sixty-seven-left[.center[
+.center[
 ## All output elements must be produced by `update`
-]]
+]
 
 ---
 # How can we test `map`?
@@ -959,10 +921,10 @@ test("map"){
 
 ```scala
 test("map"){
-  map(Nil)(_ => ???) shouldEqual Nil
+  map(Nil, _ => ???) shouldEqual Nil
 
-  map(List(1,2,3)    )(x => x) shouldEqual List(1,2,3)
-  map(List(1,2,3,4,5))(x => x) shouldEqual List(1,2,3,4,5)
+  map(List(1,2,3)    , x => x) shouldEqual List(1,2,3)
+  map(List(1,2,3,4,5), x => x) shouldEqual List(1,2,3,4,5)
 }
 ```
 
@@ -974,10 +936,10 @@ test("map"){
 
 ```scala
 test("map"){
-  map(Nil)(_ => ???) shouldEqual Nil
+  map(Nil, _ => ???) shouldEqual Nil
 
-  map(List(1,2,3)    )(identity) shouldEqual List(1,2,3)
-  map(List(1,2,3,4,5))(identity) shouldEqual List(1,2,3,4,5)
+  map(List(1,2,3)    , identity) shouldEqual List(1,2,3)
+  map(List(1,2,3,4,5), identity) shouldEqual List(1,2,3,4,5)
 }
 ```
 
@@ -998,7 +960,7 @@ object Predef {
 ```scala
 test("map"){
   forAll((list: List[Int]) =>
-    map(list)(identity) shouldEqual list
+    map(list, identity) shouldEqual list
   )
 }
 ```
