@@ -671,8 +671,8 @@ def format[A](value: A): String =
   value match {
     case x: String       => x.toLowerCase
     case x: Double       => truncate(2, x)
-    case x: List[String] => x.map(_.toLowerCase).mkString(",")
-    case x: List[Double] => x.map(truncate(2, _)).mkString(",")
+    case x: List[String] => x.map(format).mkString(",")
+    case x: List[Double] => x.map(format).mkString(",")
     case _               => "N/A"
   }
 ```
@@ -794,7 +794,6 @@ class: center, middle
 # Parametric polymorphism (`map`)
 # !=
 # Ad hoc polymorphism (`format`)
-
 
 ---
 # How can we implement `map`?
