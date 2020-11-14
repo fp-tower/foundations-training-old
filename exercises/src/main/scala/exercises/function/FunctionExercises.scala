@@ -1,5 +1,6 @@
 package exercises.function
 
+import java.io.File
 import java.time.LocalDate
 
 import exercises.function.HttpClientBuilder
@@ -148,114 +149,48 @@ object FunctionExercises {
   lazy val weirdLocalDateDecoder: JsonDecoder[LocalDate] =
     ???
 
-  ///////////////////////////
-  // 3. Recursion & Laziness
-  ///////////////////////////
+  ///////////////////////////////
+  // Exercise 4: Data processing
+  ///////////////////////////////
 
-  // 3a. Implement `sumList` using an imperative approach (while, for loop)
-  // such as sumList(List(1,5,2)) == 8
-  def sumList(xs: List[Int]): Int =
+  // 4a. Implement `size` using a mutable state and a for loop
+  // such as sum(List(2,5,-3,8)) == 12
+  // and     sum(Nil) == 0
+  def sum(numbers: List[Int]): Int =
     ???
 
-  // 3b. Implement `mkString` using an imperative approach (while, for loop)
-  // such as mkString(List('H', 'e', 'l', 'l', 'o')) == "Hello"
-  def mkString(xs: List[Char]): String =
+  // 4b. Implement `min` using a mutable state and a for loop
+  // such as min(List(2,5,1,8)) == Some(1)
+  // and     min(Nil) == None
+  // Note: Option is an enumeration with two values:
+  // * Some when there is a value and
+  // * None when there is no value (a bit like null)
+  def min(numbers: List[Int]): Option[Int] =
     ???
 
-  // 3c. Implement `sumList2` using recursion (same behaviour than `sumList`).
-  // Does your implementation work with a large list? e.g. List.fill(1000000)(1)
-  def sumList2(xs: List[Int]): Int =
+  // 4c. Implement `wordCount` using a mutable state and a for loop.
+  // `wordCount` compute how many times each word appears in a `List`
+  // such as wordCount(List("Hi", "Hello", "Hi")) == Map("Hi" -> 2, "Hello" -> 1)
+  // and     wordCount(Nil) == Map.empty
+  // Note: You can lookup an element in a `Map` with the method `get`
+  // and you can upsert a value using `updated`
+  def wordCount(words: List[String]): Map[String, Int] =
     ???
 
-  ///////////////////////
-  // GO BACK TO SLIDES
-  ///////////////////////
+  // 4d. `sum`, `min` and `wordCount` are quite similar.
+  // Could you write a higher-order function that captures this pattern?
+  // How would you call it?
+  def pattern = ???
 
-  def foldLeft[A, B](fa: List[A], b: B)(f: (B, A) => B): B = {
-    var acc = b
-    for (a <- fa) {
-      acc = f(acc, a)
-    }
-    acc
-  }
-
-  @tailrec
-  def foldLeftRec[A, B](xs: List[A], b: B)(f: (B, A) => B): B =
-    xs match {
-      case Nil => b
-      case h :: t =>
-        val newB = f(b, h)
-        foldLeftRec(t, newB)(f)
-    }
-
-  def sumList3(xs: List[Int]): Int =
-    foldLeft(xs, 0)(_ + _)
-
-  // 3d. Implement `mkString2` using `foldLeft` (same behaviour than `mkString`)
-  def mkString2(xs: List[Char]): String =
+  // 4e. Implement `diskUsage` a function that calculates the size of file/directory in bytes.
+  // Please try to implement `diskUsage` using an imperative approach (loop + variables).
+  // Note: check the `length` and `listFiles` methods on `File`.
+  def diskUsage(input: File): Long =
     ???
 
-  // 3e. Implement `multiply` using `foldLeft`
-  // such as multiply(List(3,2,4)) == 3 * 2 * 4 = 24
-  // and     multiply(Nil) == 1
-  def multiply(xs: List[Int]): Int =
+  // 4f. Implement `diskUsageRecursive` another version of `diskUsage` but this time using recursions.
+  def diskUsageRecursive(input: File): Long =
     ???
-
-  // 3f. Implement `forAll` which checks if all elements in a List are true
-  // such as forAll(List(true, true , true)) == true
-  // but     forAll(List(true, false, true)) == false
-  // does your implementation terminate early? e.g. forAll(List(false, false, false)) does not go through the entire list
-  // does your implementation work with a large list? e.g. forAll(List.fill(1000000)(true))
-  def forAll(xs: List[Boolean]): Boolean =
-    ???
-
-  // 3g. Implement `find` which returns the first element in a List where the predicate answers.function returns true
-  // such as find(List(1,3,10,2,6))(_ > 5) == Some(10)
-  // but     find(List(1,2,3))(_ > 5) == None
-  // does your implementation terminate early? e.g. find(List(1,2,3,4)(_ == 2) stop iterating as soon as it finds 2
-  // does your implementation work with a large list? e.g. find(1.to(1000000).toList)(_ == -1)
-  def find[A](xs: List[A])(predicate: A => Boolean): Option[A] =
-    ???
-
-  ///////////////////////
-  // GO BACK TO SLIDES
-  ///////////////////////
-
-  def foldRight[A, B](xs: List[A], b: B)(f: (A, => B) => B): B =
-    xs match {
-      case Nil    => b
-      case h :: t => f(h, foldRight(t, b)(f))
-    }
-
-  // 3h. Implement `forAll2` using `foldRight` (same behaviour than `forAll`)
-  def forAll2(xs: List[Boolean]): Boolean =
-    ???
-
-  // 3i. Implement `headOption` using `foldRight`.
-  // `headOption` returns the first element of a List if it exists
-  // such as headOption(List(1,2,3)) == Some(1)
-  // but     headOption(Nil) == None
-  def headOption[A](xs: List[A]): Option[A] =
-    ???
-
-  // 3j. What fold (left or right) would you use to implement `min`? Why?
-  def min(xs: List[Int]): Option[Int] = ???
-
-  // 3k. Run `isEven` or `isOdd` for small and large input.
-  // Search for mutual tail recursion in Scala.
-  def isEvenRec(x: Int): Boolean =
-    if (x > 0) isOddRec(x - 1)
-    else if (x < 0) isOddRec(x + 1)
-    else true
-
-  def isOddRec(x: Int): Boolean =
-    if (x > 0) isEvenRec(x - 1)
-    else if (x < 0) isEvenRec(x + 1)
-    else false
-
-  // 3l. What happens when we call `foo`? Search for General recursion
-  // or read https://www.quora.com/Whats-the-big-deal-about-recursion-without-a-terminating-condition
-  def foo: Int = foo
 
   ////////////////////////
   // 4. Pure functions
@@ -307,12 +242,7 @@ object FunctionExercises {
     case x: Double => x + 1
   }
 
-  // 4j. is `sum` a pure answers.function? why?
-  def sum(xs: List[Int]): Int = {
-    var acc = 0
-    xs.foreach(x => acc += x)
-    acc
-  }
+//§
 
   ////////////////////////
   // 5. Memoization

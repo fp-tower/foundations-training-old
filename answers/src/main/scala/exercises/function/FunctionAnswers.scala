@@ -1,5 +1,6 @@
 package exercises.function
 
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -166,136 +167,75 @@ object FunctionAnswers {
       localDateString.orElse(localDateInt)
   }
 
-  ////////////////////////////
-  // 2. polymorphic functions
-  ////////////////////////////
+  ///////////////////////////////
+  // Exercise 4: Data processing
+  ///////////////////////////////
 
-  case class Pair[A](first: A, second: A) {
-    def map[B](f: A => B): Pair[B] =
-      Pair(f(first), f(second))
+  def sum(numbers: List[Int]): Int = {
+    var total = 0
+    for (x <- numbers) total += x
+    total
   }
 
-  def mapOption[A, B](option: Option[A], f: A => B): Option[B] =
-    option match {
-      case None    => None
-      case Some(a) => Some(f(a))
-    }
-
-  def identity[A](x: A): A = x
-
-  def const[A, B](a: A)(b: B): A = a
-
-  def setOption[A, B](option: Option[A])(value: B): Option[B] =
-    option.map(const(value))
-
-  def andThen[A, B, C](f: A => B, g: B => C): A => C =
-    a => g(f(a))
-
-  def compose[A, B, C](f: B => C, g: A => B): A => C =
-    a => f(g(a))
-
-  val inc: Int => Int    = x => x + 1
-  val double: Int => Int = x => 2 * x
-
-  val doubleInc: Int => Int = andThen(double, inc)
-
-  val incDouble: Int => Int = compose(double, inc)
-
-  val default: HttpClientBuilder = HttpClientBuilder.default("localhost", 8080)
-
-  val clientBuilder1: HttpClientBuilder = default
-    .withTimeout(10.seconds)
-    .withFollowRedirect(true)
-    .withMaxParallelRequest(3)
-
-  val clientBuilder2: HttpClientBuilder =
-    (withTimeout(10.seconds) compose
-      withFollowRedirect(true) compose
-      withMaxParallelRequest(3)).apply(default)
-
-  ///////////////////////////
-  // 3. Recursion & Laziness
-  ///////////////////////////
-
-  def sumList(xs: List[Int]): Int = {
-    var sum = 0
-    for (x <- xs) sum += x
-    sum
+  def size[A](elements: List[A]): Int = {
+    var counter = 0
+    for (_ <- elements) counter += 1
+    counter
   }
 
-  def sumList2(xs: List[Int]): Int = {
-    @tailrec
-    def _sumList(ys: List[Int], acc: Int): Int =
-      ys match {
-        case Nil    => acc
-        case h :: t => _sumList(t, acc + h)
-      }
-
-    _sumList(xs, 0)
+  def min(numbers: List[Int]): Option[Int] = {
+    var state = Option.empty[Int]
+    for (number <- numbers) state = combineMin(state, number)
+    state
   }
 
-  def sumList3(xs: List[Int]): Int =
-    foldLeft(xs, 0)(_ + _)
+  private def combineMin(state: Option[Int], number: Int): Option[Int] =
+    state match {
+      case None               => Some(number)
+      case Some(currentState) => Some(currentState min number)
+    }
 
-  def mkString(xs: List[Char]): String = {
-    var str = ""
-    for (x <- xs) str += x
-    str
+  def wordCount(words: List[String]): Map[String, Int] = {
+    var state = Map.empty[String, Int]
+    for (word <- words) state = addKey(state, word)
+    state
   }
 
-  def mkString2(xs: List[Char]): String =
-    foldLeft(xs, "")(_ + _)
-
-  @tailrec
-  def foldLeft[A, B](xs: List[A], z: B)(f: (B, A) => B): B =
-    xs match {
-      case Nil    => z
-      case h :: t => foldLeft(t, f(z, h))(f)
+  def addKey[K](state: Map[K, Int], key: K): Map[K, Int] =
+    state.updatedWith(key) {
+      case None    => Some(1)
+      case Some(n) => Some(n + 1)
     }
 
-  def reverse[A](xs: List[A]): List[A] =
-    foldLeft(xs, List.empty[A])(_.::(_))
+  def foldLeft[From, To](elements: List[From], default: To)(combine: (To, From) => To): To = {
+    var state = default
+    for (element <- elements) state = combine(state, element)
+    state
+  }
 
-  def multiply(xs: List[Int]): Int = foldLeft(xs, 1)(_ * _)
+  // 4e. Implement `diskUsage` a function that calculates the size of file/directory in bytes.
+  // Please try to implement `diskUsage` using an imperative approach (loop + variables).
+  // Note: check the `length` and `listFiles` methods on `File`.
+  def diskUsage(input: File): Long = {
+    var total = 0L
+    val queue = mutable.Queue(input)
 
-  def filter[A](xs: List[A])(p: A => Boolean): List[A] =
-    foldLeft(xs, List.empty[A])((acc, a) => if (p(a)) a :: acc else acc).reverse
+    while (queue.nonEmpty) {
+      val file = queue.dequeue()
+      total += file.length()
 
-  def foldRight[A, B](xs: List[A], z: B)(f: (A, => B) => B): B =
-    xs match {
-      case Nil    => z
-      case h :: t => f(h, foldRight(t, z)(f))
+      if (file.isDirectory)
+        queue.addAll(file.listFiles())
     }
 
-  @tailrec
-  def find[A](fa: List[A])(p: A => Boolean): Option[A] =
-    fa match {
-      case Nil     => None
-      case x :: xs => if (p(x)) Some(x) else find(xs)(p)
-    }
+    total
+  }
 
-  @tailrec
-  def forAll(fa: List[Boolean]): Boolean =
-    fa match {
-      case Nil        => true
-      case false :: _ => false
-      case true :: xs => forAll(xs)
-    }
-
-  def forAll2(xs: List[Boolean]): Boolean =
-    foldRight(xs, true)(_ && _)
-
-  def headOption[A](xs: List[A]): Option[A] =
-    foldRight(xs, Option.empty[A])((a, _) => Some(a))
-
-  def find2[A](xs: List[A])(p: A => Boolean): Option[A] =
-    foldRight(xs, Option.empty[A])((a, rest) => if (p(a)) Some(a) else rest)
-
-  def min(xs: List[Int]): Option[Int] =
-    xs match {
-      case Nil          => None
-      case head :: tail => Some(foldLeft(tail, head)(_ min _))
-    }
+  // 4f. Implement `diskUsageRecursive` another version of `diskUsage` but this time using recursions.
+  def diskUsageRecursive(file: File): Long =
+    if (file.isDirectory)
+      file.length() + file.listFiles.map(diskUsage).sum
+    else file.length()
 
   ////////////////////////
   // 5. Memoization

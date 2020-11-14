@@ -87,19 +87,29 @@ class FunctionExercisesTest extends AnyFunSuite with ScalaCheckDrivenPropertyChe
     assert(Try(weirdLocalDateDecoder.decode("hello")).isFailure)
   }
 
-  ///////////////////////////
-  // 3. Recursion & Laziness
-  ///////////////////////////
+  ///////////////////////////////
+  // Exercise 4: Data processing
+  ///////////////////////////////
 
-  ignore("sumList small") {
-    assert(sumList(List(1, 2, 3, 10)) == 16)
-    assert(sumList(Nil) == 0)
+  ignore("sum") {
+    assert(sum(List(1, 5, 2)) == 8)
+    assert(sum(Nil) == 0)
   }
 
-  ignore("sumList large") {
-    val xs = 1.to(1000000).toList
+  ignore("sum is consistent with List sum") {
+    forAll { (numbers: List[Int]) =>
+      assert(sum(numbers) == numbers.sum)
+    }
+  }
 
-    assert(sumList(xs) == xs.sum)
+  ignore("min") {
+    assert(min(List(2, 5, 1, 8)) == Some(1))
+    assert(min(Nil) == None)
+  }
+
+  ignore("wordCount") {
+    assert(wordCount(List("Hi", "Hello", "Hi")) == Map("Hi" -> 2, "Hello" -> 1))
+    assert(wordCount(Nil) == Map.empty)
   }
 
 }
