@@ -237,9 +237,9 @@ object FunctionAnswers {
       file.length() + file.listFiles.map(diskUsage).sum
     else file.length()
 
-  ////////////////////////
-  // 5. Memoization
-  ////////////////////////
+  /////////////////////////////////
+  // Exercise 6: Memoization
+  /////////////////////////////////
 
   def memoize[A, B](f: A => B): A => B = {
     val cache = mutable.Map.empty[A, B]
