@@ -1,7 +1,7 @@
 package exercises.function
 
 import java.io.File
-import java.time.LocalDate
+import java.time.{Instant, LocalDate}
 
 import exercises.function.HttpClientBuilder
 import exercises.function.HttpClientBuilder._
@@ -192,72 +192,79 @@ object FunctionExercises {
   def diskUsageRecursive(input: File): Long =
     ???
 
-  ////////////////////////
-  // 4. Pure functions
-  ////////////////////////
+  /////////////////////////////////
+  // Exercise 5: Functional subset
+  /////////////////////////////////
 
-  // 4a. is `plus` a pure answers.function? why?
+  // 5a. does `plus` respect the functional subset? why?
   def plus(a: Int, b: Int): Int = a + b
 
-  // 4b. is `div` a pure answers.function? why?
-  def div(a: Int, b: Int): Int =
-    if (b == 0) sys.error("Cannot divide by 0")
-    else a / b
+  // 5b. does `createPost` respect the functional subset? why?
+  case class BlogPost(title: String, content: String, createdAt: Instant)
 
-  // 4c. is `times2` a pure answers.function? why?
-  var counterTimes2 = 0
-  def times2(i: Int): Int = {
-    counterTimes2 += 1
-    i * 2
+  def createPost(title: String, content: String): BlogPost =
+    if (title.isEmpty || content.isEmpty)
+      throw new IllegalArgumentException("Title or content must not be empty")
+    else BlogPost(title, content, Instant.now())
+
+  // 5c. does `max` respect the functional subset? why?
+  def max[A](list: List[Int]): Option[Int] = {
+    var state = Option.empty[Int]
+    for (element <- list)
+      state match {
+        case None             => state = Some(element)
+        case Some(currentMax) => if (currentMax < element) state = Some(element)
+      }
+
+    state
   }
 
-  // 4d. is `boolToInt` a pure answers.function? why?
-  def boolToInt(b: Boolean): Int =
-    if (b) 5
-    else Random.nextInt() / 2
+  // 5d. does `getOrder` and `insertOrder` respect the functional subset? why?
+  case class Order(clientId: UserId, orderId: Long, product: String, price: Double)
+  private var orders: Map[Long, Order] = Map.empty
 
-  // 4e. is `mapLookup` a pure answers.function? why?
-  def mapLookup(map: Map[String, Int], key: String): Int =
-    map(key)
+  def getOrder(clientId: UserId, orderId: Long): Option[Order] =
+    orders.get(orderId).filter(_.clientId == clientId)
 
-  // 4f. is `times3` a pure answers.function? why?
-  def times3(i: Int): Int = {
-    println("do something here") // could be a database access or http call
-    i * 3
+  def insertOrder(order: Order): Unit =
+    orders = orders.updated(order.orderId, order)
+
+  // 5e. does `times3` respect the functional subset? why?
+  def times3(number: Int): Int = {
+    println(s"Times 3 called with input $number")
+    number * 3
   }
 
-  // 4g. is `circleArea` a pure answers.function? why?
+  // 5f. does `circleArea` respect the functional subset? why?
   val pi = 3.14
   def circleArea(radius: Double): Double =
     radius * radius * pi
 
-  // 4h. is `inc` or inc_v2 a pure answers.function? why?
-  def inc_v2(xs: Array[Int]): Unit =
+  // 5g. does `increment` respect the functional subset? why?
+  def increment(xs: Array[Int]): Unit =
     for { i <- xs.indices } xs(i) = xs(i) + 1
 
-  // 4i. is `incAll` a pure answers.function? why?
+  // 5h. does `incAll` respect the functional subset? why?
   def incAll(value: Any): Any = value match {
     case x: Int    => x + 1
     case x: Long   => x + 1
     case x: Double => x + 1
   }
 
-//§
+  /////////////////////////////////
+  // Exercise 6: Memoization
+  /////////////////////////////////
 
-  ////////////////////////
-  // 5. Memoization
-  ////////////////////////
-
-  // 5a. Implement `memoize` such as
+  // 6a. Implement `memoize` such as
   // val cachedInc = memoize((_: Int) + 1)
   // cachedInc(3) // 4 calculated
   // cachedInc(3) // from cache
   // see https://medium.com/musings-on-functional-programming/scala-optimizing-expensive-functions-with-memoization-c05b781ae826
   // or https://github.com/scalaz/scalaz/blob/series/7.3.x/tests/src/test/scala/scalaz/MemoTest.scala
-  def memoize[A, B](f: A => B): A => B = ???
+  def memoize[A, B](fun: A => B): A => B = ???
 
-  // 5b. How would you adapt `memoize` to work on recursive answers.function e.g. fibonacci
+  // 6b. How would you adapt `memoize` to work on recursive answers.function e.g. fibonacci
   // can you generalise the pattern?
-  def memoize2 = ???
+  def memoizeV2 = ???
 
 }
