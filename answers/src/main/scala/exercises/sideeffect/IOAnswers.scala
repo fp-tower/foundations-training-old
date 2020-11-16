@@ -116,8 +116,12 @@ object IOAnswers {
     def handleErrorWith[B >: A](f: Throwable => IO[B]): IO[B] =
       attempt.flatMap(_.fold(f, succeed))
 
-    def retryOnce: IO[A] =
-      handleErrorWith(_ => this)
+    def retry(n: Int): IO[A] =
+      handleErrorWith(
+        t =>
+          if (n <= 0) IO.fail(t)
+          else retry(n - 1)
+      )
 
     def retryUntilSuccess(waitBeforeRetry: FiniteDuration): IO[A] =
       handleErrorWith(_ => sleep(waitBeforeRetry) *> retryUntilSuccess(waitBeforeRetry))
@@ -177,6 +181,14 @@ object IOAnswers {
     val age = scala.io.StdIn.readLine().toInt
     User(name, age, createdAt = Instant.now())
   }
+
+  val userConsoleWithRetryProgram: IO[User] =
+    for {
+      _         <- writeLine("What's your name?")
+      name      <- readLine
+      age       <- (writeLine("What's your age?") *> readInt).retry(3)
+      createdAt <- readNow
+    } yield User(name, age, createdAt)
 
   ////////////////////////
   // 5. Testing

@@ -106,7 +106,7 @@ class IOAnswersTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks {
     }
   }
 
-  test("retryOnce") {
+  test("retry") {
     val error = new Exception("Unsupported odd number")
     def action(ref: IORef[Int]): IO[String] =
       ref.updateGetNew(_ + 1).map(_ % 2 == 0).flatMap {
@@ -115,7 +115,7 @@ class IOAnswersTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks {
       }
 
     assert(IORef(0).flatMap(action).attempt.unsafeRun() == Failure(error))
-    assert(IORef(0).flatMap(action(_).retryOnce).unsafeRun() == "OK")
+    assert(IORef(0).flatMap(action(_).retry(1)).unsafeRun() == "OK")
   }
 
   ////////////////////
