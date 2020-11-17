@@ -1,11 +1,11 @@
-package exercises.sideeffect
+package exercises.action
 
 import java.util.concurrent.ExecutorService
 
-import exercises.sideeffect.{IOAsync, IOAsyncRef, IORef}
+import exercises.action.{IOAsync, IOAsyncRef, IORef}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import exercises.sideeffect.ThreadPoolUtil.CounterExecutionContext
+import exercises.action.ThreadPoolUtil.CounterExecutionContext
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,6 +1,6 @@
 package exercises.errorhandling
 
-import exercises.sideeffect.IOAnswers.IO
+import exercises.action.IOAnswers.IO
 
 case class OptionT[+A](value: IO[Option[A]]) {
   def map[B](f: A => B): OptionT[B] =

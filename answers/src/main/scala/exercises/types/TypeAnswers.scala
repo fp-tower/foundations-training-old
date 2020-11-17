@@ -3,7 +3,7 @@ package exercises.types
 import java.time.Instant
 import java.util.UUID
 
-import exercises.sideeffect.IOAnswers.IO
+import exercises.action.IOAnswers.IO
 import exercises.types.Comparison._
 import cats.data.NonEmptyList
 import eu.timepit.refined.types.numeric.PosInt

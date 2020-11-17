@@ -1,8 +1,8 @@
-package exercises.sideeffect
+package exercises.action
 
 import java.util.concurrent.{CountDownLatch, ExecutorService}
 
-import exercises.sideeffect.IOAsyncExercises.IO.succeed
+import exercises.action.IOAsyncExercises.IO.succeed
 
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ExecutionContext, Future, Promise}

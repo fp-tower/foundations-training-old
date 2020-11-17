@@ -1,9 +1,9 @@
-package exercises.sideeffect
+package exercises.action
 
 import java.time.Instant
 
-import exercises.sideeffect.IOAnswers._
-import exercises.sideeffect.IORef
+import exercises.action.IOAnswers._
+import exercises.action.IORef
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 

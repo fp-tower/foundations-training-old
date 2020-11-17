@@ -1,7 +1,7 @@
 package exercises.errorhandling
 
 import exercises.errorhandling.OptionAnswers.Shape.{Circle, Rectangle}
-import exercises.sideeffect.IOAsync
+import exercises.action.IOAsync
 
 import scala.concurrent.duration._
 import scala.util.Try

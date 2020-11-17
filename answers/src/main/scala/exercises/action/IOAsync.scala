@@ -1,4 +1,4 @@
-package exercises.sideeffect
+package exercises.action
 
 import java.util.concurrent.CountDownLatch
 

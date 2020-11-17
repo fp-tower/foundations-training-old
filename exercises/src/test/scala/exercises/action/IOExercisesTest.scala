@@ -1,8 +1,8 @@
-package exercises.sideeffect
+package exercises.action
 
 import java.time.Instant
 
-import exercises.sideeffect.IOExercises._
+import exercises.action.IOExercises._
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 

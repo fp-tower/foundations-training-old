@@ -2,7 +2,7 @@ package exercises.errorhandling
 
 import exercises.errorhandling.OptionAnswers.Role._
 import exercises.errorhandling.OptionAnswers._
-import exercises.sideeffect.{IOAsync, IOAsyncRef}
+import exercises.action.{IOAsync, IOAsyncRef}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
