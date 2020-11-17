@@ -237,8 +237,7 @@ object IOAnswers {
     for {
       _         <- console.writeLine("What's your name?")
       name      <- console.readLine
-      _         <- console.writeLine("What's your age?")
-      age       <- console.readInt
+      age       <- (console.writeLine("What's your age?") *> console.readInt).retry(3)
       createdAt <- clock.readNow
     } yield User(name, age, createdAt)
 

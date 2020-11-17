@@ -199,8 +199,6 @@ object IOExercises {
 
   // 3e. Implement `userConsoleWithRetryProgram`, a version of the previous program that retries
   // up to 3 times when reading the user's age.
-  // For example, if the user enters "hello" <enter> "world" <enter> "23" <enter>, then the user's age will be 23
-  // but if the user enter "hello" <enter> "world" <enter> "!" <enter>, then the program will fail.
   lazy val userConsoleWithRetryProgram: IO[User] =
     ???
 
@@ -259,24 +257,24 @@ object IOExercises {
 
   // 5a. Implement `deleteTwoOrders` such as it call twice `UserOrderApi#deleteOrder`
   // How would you test `deleteTwoOrders`?
-  def deleteTwoOrders(api: UserOrderApi)(orderId1: OrderId, orderId2: OrderId): IO[Unit] =
-    ???
-
-  // 5b. Implement `deleteAllUserOrders` such as it fetches a user: User_V2 and delete all associated orders
-  // e.g. if `getUser` returns User_V2(UserId("1234"), "Rob", List(OrderId("1111"), OrderId("5555")))
-  //      Then we would call deleteOrder(OrderId("1111")) and deleteOrder(OrderId("5555")).
-  def deleteAllUserOrders(api: UserOrderApi)(userId: UserId): IO[Unit] =
-    ???
+  trait UserOrderApi {
+    def getUser(userId: UserId): IO[User_V2]
+    def deleteOrder(orderId: OrderId): IO[Unit]
+  }
 
   case class UserId(value: String)
   case class OrderId(value: String)
 
   case class User_V2(userId: UserId, name: String, orderIds: List[OrderId])
 
-  trait UserOrderApi {
-    def getUser(userId: UserId): IO[User_V2]
-    def deleteOrder(orderId: OrderId): IO[Unit]
-  }
+  def deleteTwoOrders(api: UserOrderApi)(orderId1: OrderId, orderId2: OrderId): IO[Unit] =
+    ???
+
+  // 5b. Implement `deleteAllUserOrders` such as it fetches a user and deletes all its orders
+  // For example, if `getUser` returns User_V2(UserId("1234"), "Rob", List(OrderId("1111"), OrderId("5555")))
+  // Then we would call deleteOrder(OrderId("1111")) and deleteOrder(OrderId("5555")).
+  def deleteAllUserOrders(api: UserOrderApi)(userId: UserId): IO[Unit] =
+    ???
 
   // 5c. Implement `sequence` which runs sequentially a list of IO and collects the results.
   // sequence(List(succeed(1), succeed(2))) == succeed(List(1,2))
