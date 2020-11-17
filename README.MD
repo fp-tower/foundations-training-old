@@ -35,8 +35,8 @@ Start the sbt shell in your terminal by running `sbt`.
 |-------------------|---------------------------------|
 | Compile           | exercises/compile               |
 | Run tests         | exercises/test                  | 
-| Run tests with regex | exercises/testOnly *FunctionEx*   |
-| Run tests with regex v2   | exercises/testOnly *FunctionEx* -- -z "selectDigits" |
+| Run tests with regex | exercises/testOnly \*FunctionEx\*   |
+| Run tests with regex v2   | exercises/testOnly \*FunctionEx\* -- -z "selectDigits" |
 
 
 ## Synopsis
