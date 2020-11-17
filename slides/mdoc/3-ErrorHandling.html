@@ -8,24 +8,15 @@
 <body>
 <textarea id="source">
 
-class: center, middle
+background-image: url(img/fp-tower/website-background.svg)
 
-<a href="https://github.com/fp-tower/foundation">
-  <img src="img/solid-color-logo.svg" alt="logo" style="width:600px;"/>
-</a>
+class: center, middle, white
 
-<br>
-<br>
+.title[Error Handling]
 
-
-# Error Handling
-
----
-layout: true
-
-<div class="footer">
-  <a href="https://github.com/fp-tower/foundation">
-    <img src="img/symbol-solid-gray-b3b3b3.svg" alt="logo" style="width:100px;"/>
+<div class="watermark">
+  <a href="https://github.com/fp-tower">
+    <img src="img/fp-tower/grey-4-fp-watermark-image-raster-transparent-file.png" alt="logo" style="width:200px;"/>
   </a>
 </div>
 
@@ -60,7 +51,7 @@ background-image: url(img/errorhandling/partial-function-2.svg)
 ---
 # Exception
 
-```tut:silent
+```scala mdoc:silent
 case class Item(id: Long, unitPrice: Double, quantity: Int)
 
 case class Order(status: String, basket: List[Item])
@@ -74,7 +65,7 @@ def submit(order: Order): Order =
   }
 ```
 
-```tut:fail
+```scala mdoc:crash
 submit(Order("Draft", Nil))
 ```
 

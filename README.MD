@@ -1,5 +1,44 @@
 ![FP Foundation Logo](logo/Foundation.png)<br>
 
+## Getting Started
+
+#### 1. Clone the project
+
+```bash
+git clone git@github.com:fp-tower/foundations-training.git
+// or
+git clone https://github.com/fp-tower/foundations-training.git
+``` 
+
+#### 2. Run the tests
+
+```bash
+sbt test
+```
+
+If you don't have `sbt`, you can find instructions [here](https://www.scala-sbt.org/download.html).
+
+
+#### 3. Open your favorite IDE
+
+Open the file `exercises/function/FunctionExercises.scala` and check your Scala plugin is working.
+
+If you're using IntelliJ
+1. click the green play icon next to the object `FunctionApp`
+2. check `Hello World!` is printed on the command line
+
+## SBT 101
+
+Start the sbt shell in your terminal by running `sbt`. 
+
+| Actions           | Command to run inside sbt shell |
+|-------------------|---------------------------------|
+| Compile           | exercises/compile               |
+| Run tests         | exercises/test                  | 
+| Run tests with regex | exercises/testOnly *FunctionEx*   |
+| Run tests with regex v2   | exercises/testOnly *FunctionEx* -- -z "selectDigits" |
+
+
 ## Synopsis
 
 ### Module 1: Function
@@ -49,16 +88,3 @@ best way to use types and tests together.
 * Learn how to precisely encode business requirements with types.
 * Getting more familiar with Scala's type hierarchy and type parameters.
 
-## SBT 101
-
-Sbt is the most common build tool for Scala projects and 
-it is the one we use in this course.
-
-Start sbt shell by running `sbt` in your terminal 
-
-| Actions           | Command to run in sbt shell |
-|-------------------|-----------------------------|
-| Compile           | exercises/compile           |
-| Run tests         | exercises/test              | 
-| Run tests with regex | exercises/testOnly *FunctionEx*   |
-| Run tests with regex v2   | exercises/testOnly *FunctionEx* -- -z "selectDigits" |
