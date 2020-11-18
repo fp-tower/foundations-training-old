@@ -49,6 +49,8 @@ background-image: url(img/errorhandling/partial-function-2.svg)
 ]
 
 ---
+class: medium-code
+
 # Exception
 
 ```scala mdoc:silent
@@ -70,9 +72,16 @@ submit(Order("Draft", Nil))
 ```
 
 ---
+class: medium-code
+
 # Exception
 
-```tut:silent
+```scala mdoc:reset:invisible
+case class Item(id: Long, unitPrice: Double, quantity: Int)
+case class Order(status: String, basket: List[Item])
+```
+
+```scala mdoc:silent
 case object EmptyBasketError extends Exception
 case class InvalidCommandError(command: String, order: Order) extends Exception
 
@@ -86,15 +95,24 @@ def submit(order: Order): Order =
   }
 ```
 
-```tut:fail
+.forty-seven-left[
+```scala mdoc:crash
 submit(Order("Draft", Nil))
+```
+]
+
+.forty-seven-right[
+```scala mdoc:crash
 submit(Order("Delivered", Nil))
 ```
+]
 
 ---
-# Exceptions are not documented
+class: medium-code
 
-```tut:silent
+# How do we know if a function throw an Exception?
+
+```scala
 def submit(order: Order): Order = ???
 
 def canSubmit(order: Order): Boolean =
@@ -111,44 +129,38 @@ def canSubmit(order: Order): Boolean =
 
 --
 
-### In Java, you have checked Exception
+### Java has checked Exception
 
 ```java
 public Order submit(Order order) `throws EmptyBasketError, InvalidCommandError`
 ```
 
 ---
-.h1[# Functional subset]
+# Functional subset
 
-.cols[
-.fortyfive-middle[
-.large[
-* Total
+.fifty-two-left[
+## 1. .hl[total]
 
-* .hl[No exception]
+## 2. deterministic
 
-* Deterministic
+## 3. no mutation
 
-* No mutation
-
-* No side effect
-]]
-
-
-.fortyfive[
-.large[
-* No null
-
-* No reflection
+## 4. no side effect
 ]
-]]
+
+
+.forty-two-right[
+## 5. no null
+
+## 6. no reflection
+]
 
 ---
-.h1[# Functional subset]
+# Functional subset
 
 .fifty-seven-left[![Partial Function](img/errorhandling/pure-function-1.svg)]
 
-.medium-right[
+.thirty-seven-right[
 .medium[
 <br>
 * Powerful refactoring
@@ -160,14 +172,15 @@ public Order submit(Order order) `throws EmptyBasketError, InvalidCommandError`
 ]
 
 ---
-.h1[# IO workaround]
+class: small-code
 
-.pull-left[
+# IO workaround
+
+.forty-seven-left[
 ![IO](img/errorhandling/io.svg)
 ]
 
-.pull-right[
-<br>
+.forty-seven-right[
 <br>
 <br>
 ```scala
@@ -183,7 +196,11 @@ def getDebitCard(user: User): IO[DebitCard] = {
 ]
 
 ---
+class: medium-code
+
 # IO does not document errors
+
+<br>
 
 ```scala
 def deleteCard(userId: UserId): IO[DebitCard] = ???
@@ -224,13 +241,11 @@ background-image: url(img/errorhandling/pure-error-handling.svg)
 
 <br>
 
-.large[
-* `Option`
+## Option
 
-* `Try`
+## Try
 
-* `Either`
-]
+## Either
 
 ---
 .h1[# Plan]
@@ -247,9 +262,11 @@ background-image: url(img/errorhandling/pure-error-handling.svg)
 
 
 ---
-.h1[# Option]
+class: medium-code
 
-.pull-left[
+# Option
+
+.forty-seven-left[
 ```scala
 sealed trait Option[+A]
 
@@ -269,14 +286,16 @@ enum Option[+A] {
 ```
 ]
 
-.pull-right[![Option](img/errorhandling/option.svg)]
+.forty-seven-right[![Option](img/errorhandling/option.svg)]
 
 
 ---
-.h1[# Option documents which values are optional]
+# Option documents which values may be missing
 
-.pull-left[
-```tut:silent
+<br>
+
+.forty-seven-left[
+```scala mdoc:silent
 case class User(
   id     : java.util.UUID,
   name   : String,
@@ -287,7 +306,7 @@ case class User(
 ```
 ]
 
-.pull-right[
+.forty-seven-right[
 ```sql
 CREATE TABLE users (
   id      UUID NOT NULL,
@@ -300,10 +319,12 @@ CREATE TABLE users (
 ]
 
 ---
-.h1[# Option forces us to think about empty case]
+class: small-code
 
-.pull-left[
-```tut:silent
+# Option forces us to consider empty scenario
+
+.forty-seven-left[
+```scala mdoc:silent
 def longest(xs: List[String]): Option[String] = {
   var current: Option[String] = None
 
@@ -321,18 +342,17 @@ def longest(xs: List[String]): Option[String] = {
 ```
 ]
 
-.pull-right[
-```tut:silent
+.forty-seven-right[
+```scala mdoc:reset:silent
 def longest(xs: List[String]): String = {
   var current: String = null
 
   for (x <- xs) {
 
-    if(current != null && current.length > x.length) {
+    if(current != null && current.length > x.length)
       () // do nothing
-    } else {
+    else
       current = x
-    }
   }
 
   current
@@ -343,19 +363,23 @@ def longest(xs: List[String]): String = {
 ---
 # Option is a List with at most one element
 
-```tut
+<br>
+
+```scala mdoc
 Some("hello").toList
 None.toList
 
-List(Some(3), None, Some(4), None, None, Some(5)).flatMap(_.toList)
+List(Some(3), None, Some(4), None, None, Some(5)).flatten
 ```
 
 ---
-class: center, middle
+background-image: url(img/fp-tower/website-background-white.svg)
 
-# Option Exercise 1
+class: middle, white
 
-`exercises.errorhandling.OptionExercises.scala`
+# OptionExercises.scala
+
+## Exercises 1
 
 ---
 # Variance digression
@@ -374,14 +398,14 @@ object Option {
 
 --
 
-```tut:silent
+```scala
 trait Foo[+A] // Foo is covariant
 trait Foo[-A] // Foo is contravariant
 trait Foo[ A] // Foo is invariant
 ```
 
 ---
-.h1[# Shape is an enumeration]
+# Shape is an enumeration
 
 <br>
 <br>
@@ -393,7 +417,7 @@ trait Foo[ A] // Foo is invariant
 
 .large-right[
 <br>
-```tut:silent
+```scala mdoc:silent
 sealed trait Shape
 
 case class Circle(radius: Int)                extends Shape
@@ -404,43 +428,53 @@ case class Rectangle(width: Int, height: Int) extends Shape
 ---
 # What is the inferred type of circle?
 
-```tut:silent
+<br>
+
+```scala
 val circle = Circle(12)
 ```
 
 ---
 # What is the inferred type of circle?
 
-```tut
+<br>
+
+```scala
 val circle = Circle(12)
+// circle: `Circle` = Circle(12)
 ```
 
 ---
-# What is the inferred type of shapes?
+# What is the inferred type of shape?
 
-```tut:silent
+<br>
+
+```scala mdoc:silent
 val optCircle   : Option[Circle]    = Some(Circle(12))
 val optRectangle: Option[Rectangle] = Some(Rectangle(5, 8))
 ```
 
-```tut:silent
+```scala
 val shape = optCircle.orElse(optRectangle)
 ```
 
 ---
 # What is the inferred type of shape?
 
-```tut:silent
+<br>
+
+```scala
 val optCircle   : Option[Circle]    = Some(Circle(12))
 val optRectangle: Option[Rectangle] = Some(Rectangle(5, 8))
 ```
 
-```tut
+```scala mdoc:silent
 val shape = optCircle.orElse(optRectangle)
+// shape: Option[`Product with Shape with Serializable`] = Some(Circle(12))
 ```
 
 ---
-.h1[# Shape]
+# Shape
 
 <br>
 
@@ -459,25 +493,29 @@ case class Rectangle(width: Int, height: Int) extends Shape `with Product with S
 ---
 # Shape
 
-```tut:silent
+```scala mdoc:reset:silent
 sealed trait Shape extends Product with Serializable
 
-case class Circle(radius: Int)                extends Shape with Product with Serializable
-case class Rectangle(width: Int, height: Int) extends Shape with Product with Serializable
+case class Circle(radius: Int)                extends Shape
+case class Rectangle(width: Int, height: Int) extends Shape
 ```
 
-```tut:silent
+```scala mdoc:silent
 val optCircle   : Option[Circle]    = Some(Circle(12))
 val optRectangle: Option[Rectangle] = Some(Rectangle(5, 8))
 ```
 
-```tut
+```scala mdoc
 val shape = optCircle.orElse(optRectangle)
 ```
 
 --
 
-### Why shape is an Option[Shape]?
+### Why shape is an Option[Shape]? Why can we upcast an Option[Circle] into an Option[Shape]?
+
+```scala mdoc
+optCircle: Option[Shape]
+```
 
 ---
 background-image: url(img/errorhandling/option-covariant.svg)
@@ -505,14 +543,23 @@ object Option {
 ```
 
 ---
-.h1[# Scala Type hierarchy]
+class: small-code
 
-.pull-left[
+# Scala Type hierarchy
+
+.forty-seven-left[
 ![Type Hierarchy](img/errorhandling/type-hierarchy.svg)
 ]
 
-.pull-right[
-```tut:silent
+.forty-seven-right[
+```scala mdoc:reset:invisible
+sealed trait Shape extends Product with Serializable
+
+case class Circle(radius: Int)                extends Shape
+case class Rectangle(width: Int, height: Int) extends Shape
+```
+
+```scala mdoc:silent
 val bool: Boolean = true
 val five: Int = 5
 val hello: String = "Hello"
@@ -528,10 +575,12 @@ val anys: List[Any] = anyVals ++ anyRefs
 ---
 background-image: url(img/errorhandling/covariance.svg)
 
-.h1[# Covariance]
+# Covariance
 
 ---
 # None
+
+<br>
 
 ```scala
 sealed trait Option[+A]
@@ -542,7 +591,7 @@ object Option {
 }
 ```
 
-```tut:silent
+```scala mdoc:silent
 val optNothing: Option[Nothing] = None
 val optInt    : Option[Int]     = None
 val optCircle : Option[Circle]  = None
@@ -551,7 +600,16 @@ val optCircle : Option[Circle]  = None
 ---
 # If Option were invariant
 
-```tut:silent
+<br>
+
+```scala mdoc:reset:invisible
+sealed trait Shape extends Product with Serializable
+
+case class Circle(radius: Int)                extends Shape
+case class Rectangle(width: Int, height: Int) extends Shape
+```
+
+```scala mdoc:silent
 sealed trait InvOption[A]
 
 object InvOption {
@@ -559,19 +617,165 @@ object InvOption {
   case class None[A]()         extends InvOption[A]
 }
 
-val optInt   : InvOption[Int]   = InvOption.None()
-val optCircle: InvOption[Circle]= InvOption.None()
+val optInt   : InvOption[Int]    = InvOption.None()
+val optCircle: InvOption[Circle] = InvOption.None()
 ```
 
 ---
-class: center, middle
+background-image: url(img/fp-tower/website-background-white.svg)
 
-# Option Exercise 2
+class: middle, white
 
-`exercises.errorhandling.OptionExercises.scala`
+# OptionExercises.scala
+
+## Exercises 2
 
 ---
-.h1[# Variance rules]
+# What is the variance of JsonDecoder?
+
+```scala mdoc:invisible
+type Json = String
+```
+
+```scala mdoc:silent
+trait JsonDecoder[A]{
+  def decode(value: Json): A
+}
+```
+
+---
+# JsonDecoder is covariant
+
+```scala mdoc:reset:invisible
+type Json = String
+
+sealed trait Shape extends Product with Serializable
+
+case class Circle(radius: Int)                extends Shape
+case class Rectangle(width: Int, height: Int) extends Shape
+```
+
+```scala mdoc:silent
+trait JsonDecoder[+A]{
+  def decode(value: Json): A
+}
+
+val circleDecoder: JsonDecoder[Circle] = (value: Json) => ???
+val shapeDecoder : JsonDecoder[Shape]  = circleDecoder
+```
+
+### But
+
+```scala mdoc:fail
+val rectangleDecoder: JsonDecoder[Rectangle] = shapeDecoder
+```
+
+---
+# What is the variance of JsonEncoder?
+
+```scala mdoc:silent
+trait JsonEncoder[A]{
+  def encode(value: A): Json
+}
+```
+
+---
+# JsonEncoder is contravariant
+
+```scala mdoc:reset:invisible
+type Json = String
+
+sealed trait Shape extends Product with Serializable
+
+case class Circle(radius: Int)                extends Shape
+case class Rectangle(width: Int, height: Int) extends Shape
+```
+
+```scala mdoc:silent
+trait JsonEncoder[-A]{
+  def encode(value: A): Json
+}
+
+val shapeDecoder : JsonEncoder[Shape]  = (value: Shape) => ???
+val circleDecoder: JsonEncoder[Circle] = shapeDecoder
+```
+
+### But
+
+```scala mdoc:fail
+val shapeDecoder2: JsonEncoder[Shape] = circleDecoder
+```
+
+---
+# What is the variance of JsonCodec?
+
+```scala mdoc:reset:invisible
+type Json = String
+
+trait JsonEncoder[-A]{
+  def encode(value: A): Json
+}
+
+trait JsonDecoder[A]{
+  def decode(value: Json): A
+}
+
+sealed trait Shape extends Product with Serializable
+
+case class Circle(radius: Int)                extends Shape
+case class Rectangle(width: Int, height: Int) extends Shape
+```
+
+```scala mdoc:silent
+trait JsonCodec[A] extends JsonDecoder[A] with JsonEncoder[A]
+```
+
+```scala mdoc:reset:invisible
+type Json = String
+```
+
+```scala mdoc:silent
+trait JsonCodec[A]{
+  def decode(value: Json): A
+  def encode(value: A   ): Json
+}
+```
+
+---
+# JsonCodec is invariant
+
+```scala
+trait JsonCodec[A] extends JsonDecoder[A] with JsonEncoder[A]
+```
+
+```scala
+trait JsonCodec[A]{
+  def decode(value: Json): A
+  def encode(value: A   ): Json
+}
+```
+
+---
+# Variance summary
+
+<br>
+
+## 1. It is the only way to get an ergonomic API in Scala
+
+## 2. Variance is type checked
+
+```scala mdoc:reset:invisible
+type Json = String
+```
+
+```scala mdoc:fail
+trait JsonEncoder[+A]{
+  def encode(value: A): Json
+}
+```
+
+---
+# Variance rules
 
 <br>
 <br>
@@ -592,131 +796,33 @@ class: center, middle
 [Thinking with types](https://leanpub.com/thinking-with-types) by Sandy Maguire
 ]
 
+---
+background-image: url(img/fp-tower/website-background-white.svg)
+
+class: middle, white
+
+# OptionExercises.scala
+
+## Exercises 3 and 4
 
 ---
-# What is the variance of JsonDecoder?
-
-```tut:invisible
-type Json = String
-```
-
-```tut:silent
-trait JsonDecoder[A]{
-  def decode(value: Json): A
-}
-```
-
----
-# JsonDecoder is covariant
-
-```tut:silent
-trait JsonDecoder[+A]{
-  def decode(value: Json): A
-}
-
-val circleDecoder: JsonDecoder[Circle] = (value: Json) => ???
-val shapeDecoder : JsonDecoder[Shape]  = circleDecoder
-```
-
-### But
-
-```tut:fail
-val rectangleDecoder: JsonDecoder[Rectangle] = shapeDecoder
-```
-
----
-# What is the variance of JsonEncoder?
-
-```tut:silent
-trait JsonEncoder[A]{
-  def encode(value: A): Json
-}
-```
-
----
-# JsonEncoder is contravariant
-
-```tut:silent
-trait JsonEncoder[-A]{
-  def encode(value: A): Json
-}
-
-val shapeDecoder : JsonEncoder[Shape]  = (value: Shape) => ???
-val circleDecoder: JsonEncoder[Circle] = shapeDecoder
-```
-
-### But
-
-```tut:fail
-val shapeDecoder2: JsonEncoder[Shape] = circleDecoder
-```
-
----
-# What is the variance of JsonCodec?
-
-```tut:silent
-trait JsonCodec[A] extends JsonDecoder[A] with JsonEncoder[A]
-```
-
-```tut:silent
-trait JsonCodec[A]{
-  def decode(value: Json): A
-  def encode(value: A   ): Json
-}
-```
-
----
-# JsonCodec is invariant
-
-```tut:silent
-trait JsonCodec[A] extends JsonDecoder[A] with JsonEncoder[A]
-```
-
-```tut:silent
-trait JsonCodec[A]{
-  def decode(value: Json): A
-  def encode(value: A   ): Json
-}
-```
-
-
----
-# Variance summary
-
-<br>
-
-## 1. It is the only way to get an ergonomic API in Scala
-
-## 2. Variance is type checked
-
-```tut:fail
-trait JsonEncoder[+A]{
-  def encode(value: A): Json
-}
-```
-
----
-class: center, middle
-
-# Option Exercises 3 and 4
-
-`exercises.errorhandling.OptionExercises.scala`
-
----
-.h1[# Use Option when]
+# Use Option when
 
 <br>
 
 .large[
 * A value may be missing
 
-* An operation can fail in a unique obvious way
+* An operation can fail in a .hl[unique and obvious] way
 
 * An operation can fail in many ways but we don't need any information about the error
 ]
 
 ---
-.h1[# Either]
+class: small-code
+# Either
+
+<br>
 
 .fifty-seven-left[
 ```scala
@@ -741,25 +847,9 @@ enum Either[+E, +A] {
 .medium-right[![Either](img/errorhandling/either.svg)]
 
 ---
-# Either is the canonical encoding of OR
+# Either encodes OR relationship
 
-```tut:invisible
-import answers.sideeffect.IOAnswers.IO
-
-case class UserId(value: Long)
-case class Email(value: String)
-
-case class User()
-
-trait DbApi {
-  def getUserById(userId: UserId): IO[User]
-  def getUserByEmail(email: Email): IO[User]
-}
-
-def db: DbApi = ???
-```
-
-```tut:silent
+```scala
 def getUser(userIdOrEmail: Either[UserId, Email]): IO[User] =
   userIdOrEmail match {
     case Left(userId) => db.getUserById(userId)
@@ -767,26 +857,23 @@ def getUser(userIdOrEmail: Either[UserId, Email]): IO[User] =
   }
 ```
 
-### Either[UserId, Email] represents a UserId OR an Email
+.center[
+### Either[UserId, Email] represents a UserId .hl[OR] an Email
+]
 
 --
 
-### How would you encode a UserId AND an Email?
+.center[
+### How would you encode a UserId .hl[AND] an Email?
+]
 
----
-# Either is the canonical encoding of OR
+--
 
-```tut:silent
-def getUser(userIdOrEmail: Either[UserId, Email]): IO[User] =
-  userIdOrEmail match {
-    case Left(userId) => db.getUserById(userId)
-    case Right(email) => db.getUserByEmail(email)
-  }
+```scala
+(UserId, Email)
+
+case class User(userId: UserId, email: Email)
 ```
-
-### Either[UserId, Email] represents a UserId OR an Email
-
-### (UserId, Email) represents a UserId AND an Email
 
 ---
 class: center, middle
@@ -794,9 +881,17 @@ class: center, middle
 # Either[???, A]
 
 ---
+class: medium-code
+
 # String Error
 
-```tut:silent
+```scala mdoc:reset:invisible
+case class Item(id: Long, unitPrice: Double, quantity: Int)
+
+case class Order(status: String, basket: List[Item])
+```
+
+```scala mdoc:silent
 def submit(order: Order): Either[String, Order] =
   order.status match {
     case "Draft" =>
@@ -807,16 +902,24 @@ def submit(order: Order): Either[String, Order] =
   }
 ```
 
-```tut
+```scala mdoc
 submit(Order("Draft", List(Item(111, 12.25, 2))))
 submit(Order("Draft", Nil))
 submit(Order("Delivered", Nil))
 ```
 
 ---
+class: medium-code
+
 # Enum Error
 
-```tut:silent
+```scala mdoc:reset:invisible
+case class Item(id: Long, unitPrice: Double, quantity: Int)
+
+case class Order(status: String, basket: List[Item])
+```
+
+```scala mdoc:silent
 sealed trait OrderError
 case object EmptyBasketError extends OrderError
 case class InvalidAction(action: String, status: String) extends OrderError
@@ -831,7 +934,7 @@ def submit(order: Order): Either[OrderError, Order] =
   }
 ```
 
-```tut
+```scala mdoc
 submit(Order("Draft", List(Item(111, 12.25, 2))))
 submit(Order("Draft", Nil))
 submit(Order("Delivered", Nil))
@@ -839,6 +942,8 @@ submit(Order("Delivered", Nil))
 
 ---
 # Enum Error
+
+<br>
 
 ```scala
 def canSubmit(order: Order): Boolean =
@@ -852,6 +957,8 @@ def canSubmit(order: Order): Boolean =
 ---
 # Enum Error
 
+<br>
+
 ```scala
 def canSubmit(order: Order): Boolean =
   submit(order) match {
@@ -861,14 +968,14 @@ def canSubmit(order: Order): Boolean =
 ```
 
 ```scala
-On line 3: warning: match may not be exhaustive.
-It would fail on the following input: Left(EmptyBasketError)
+// error on line 3: warning: match may not be exhaustive.
+// It would fail on the following input: Left(EmptyBasketError)
 ```
 
 ---
 # Throwable Error
 
-```tut:silent
+```scala mdoc:silent
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import scala.util.Try
@@ -879,7 +986,7 @@ def parseLocalDate(dateStr: String): Either[Throwable, LocalDate] =
   Try(LocalDate.parse(dateStr, formatter)).toEither
 ```
 
-```tut
+```scala mdoc
 parseLocalDate("2019-09-12")
 parseLocalDate("12 July 1996")
 ```
@@ -897,41 +1004,59 @@ class: center, middle
 ---
 # Either is Right biased
 
-```tut:silent
-def map[E, A, B](either: Either[E, A])(f: A => B): Either[E, B] = ???
+```scala
+trait Either[+E, +A] {
+  def map[B](f: A => B): Either[E, B] = ???
+}
 ```
-
-```tut
-parseLocalDate("2019-09-12").map(_.plusDays(2))
-```
-
---
 
 <br>
 
-```tut:silent
-def flatMap[E, A, B](either: Either[E, A])(f: A => Either[E, B]): Either[E, B] = ???
+```scala mdoc
+parseLocalDate("2019-09-12").map(_.plusDays(2))
 ```
 
-```tut
+---
+# Either is Right biased
+
+```scala
+trait Either[+E, +A] {
+  def map[B](f: A => B): Either[E, B] = ???
+  def flatMap[B](f: A => Either[E, B]): Either[E, B] = ???
+}
+```
+
+```scala mdoc
+parseLocalDate("2019-09-12").map(_.plusDays(2))
+```
+
+
+```scala mdoc
 for {
   date1 <- parseLocalDate("2019-01-24")
   date2 <- parseLocalDate("2020-09-12")
 } yield date1.isBefore(date2)
 ```
 
+.center[
+## We write code that focus on the .hl[HAPPY PATH]
+]
 
 ---
-class: center, middle
+background-image: url(img/fp-tower/website-background-white.svg)
 
-# Either Exercises 1 to 3
+class: middle, white
 
-`exercises.errorhandling.EitherExercises.scala`
+# EitherExercises.scala
+
+## Exercises 1, 2 and 3
 
 ---
 # Error Hierarchy
 
-```tut:silent
+<br>
+
+```scala mdoc:silent
 sealed trait UsernameError
 object UsernameError {
   case class TooSmall(length: Int)               extends UsernameError
@@ -988,19 +1113,42 @@ background-image: url(img/errorhandling/error-hierarchy-3.svg)
 type UserError = UsernameError | CountryError | OtherError
 ```
 
+--
 
+## Union types != Either
+
+
+.thirty-two-left[
+```scala
+       Int | Int   = Int
+
+Either[Int , Int] != Int
+```
+]
+
+.fifty-seven-right[
+```scala
+def handleError[E, A](value: E | A)(onError: A): A =
+  value match {
+    case failure: E => onError(failure)
+    case success: A => success
+  }
+```
+]
+
+---
+background-image: url(img/fp-tower/website-background-white.svg)
+
+class: middle, white
+
+# EitherExercises.scala
+
+## Exercises 4
 
 ---
 class: center, middle
 
-# Either Exercise 4
-
-`exercises.errorhandling.EitherExercises.scala`
-
----
-class: center, middle
-
-# Either is an Option with polymorphic error type
+# Either is an Option with a custom error type
 
 ---
 class: center, middle
@@ -1021,7 +1169,7 @@ class: center, middle
 background-image: url(img/errorhandling/error-conversion.svg)
 
 ---
-.h1[# Either Summary]
+# Either Summary
 
 <br>
 

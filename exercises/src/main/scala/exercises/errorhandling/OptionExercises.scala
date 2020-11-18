@@ -8,15 +8,16 @@ import scala.util.Try
 
 object OptionExercises {
 
-  ////////////////////////
-  // 1. Use cases
-  ////////////////////////
+  /////////////////////////
+  // Exercise 1: Use cases
+  /////////////////////////
 
-  // 1a. Implement `getUserEmail` which looks up a user using its id, then it returns the user's email if it exists.
+  // 1a. Implement `getUserEmail` which looks up a user using its id,
+  // then it returns the user's email if it exists.
   // val userMap = Map(
-  //   222 -> User(222, "john" , "j@x.com"),
-  //   123 -> User(123, "elisa", "e@y.com"),
-  //   444 -> User(444, "bob")
+  //   222 -> User(222, "john" , Some("j@x.com")),
+  //   123 -> User(123, "elisa", Some("e@y.com")),
+  //   444 -> User(444, "bob", None)
   // )
   // getUserEmail(123, userMap) == Some("e@y.com")
   // getUserEmail(111, userMap) == None // no user
@@ -29,7 +30,7 @@ object OptionExercises {
 
   sealed trait Role {
 
-    // 1b. Implement `optSingleAccountId` which returns the account id if the role is a Reader or Editor
+    // 1b. Implement `optSingleAccountId` which returns the account id if the role is a Reader or an Editor
     // such as Editor(123, "Comic Sans").optSingleAccountId == Some(123)
     //         Reader(123, premiumUser = true).optSingleAccountId == Some(123)
     // but     Admin.optSingleAccountId == None
@@ -57,27 +58,11 @@ object OptionExercises {
   // GO BACK TO SLIDES
   ///////////////////////
 
-  ////////////////////////
-  // 2. Variance
-  ////////////////////////
+  /////////////////////////
+  // Exercise 2: Variance
+  /////////////////////////
 
-  // 2a. Implement `parseRectangle` which parses a user input line (e.g. from the command line) into a `Rectangle`.
-  // `parseRectangle` expects the following format 'R', space, Int, space, Int, end of line
-  // such as parseRectangle("R 20 5") == Some(Rectangle(20, 5))
-  // but     parseRectangle("C 20 5") == None
-  //         parseRectangle("R 0")    == None
-  // Note: `parseCircle` does something similar for `Circle`.
-  // Note: `parseRectangle` returns an `InvOption` which is like a standard `Option` but with an invariant type parameter.
-  def parseRectangle(inputLine: String): InvOption[Rectangle] =
-    ???
-
-  // 2b. Implement `parseShape` which parses a user input line (e.g. from the command line) into a `Shape`.
-  // Try to reuse `parseCircle` and `parseRectangle`.
-  // Note: You may need to `map` the `InvOption`.
-  def parseShape(inputLine: String): InvOption[Shape] =
-    ???
-
-  sealed trait Shape
+  sealed trait Shape extends Product with Serializable
   object Shape {
     case class Circle(radius: Int)                extends Shape
     case class Rectangle(width: Int, height: Int) extends Shape
@@ -88,6 +73,21 @@ object OptionExercises {
       case "C" :: IntParser(radius) :: Nil => InvOption.Some(Circle(radius))
       case _                               => InvOption.None()
     }
+
+  // 2a. Implement `parseRectangle` which parses a user input line (e.g. from the command line) into a `Rectangle`.
+  // `parseRectangle` expects the following format 'R', space, Int, space, Int, end of line
+  // such as parseRectangle("R 20 5") == Some(Rectangle(20, 5))
+  // but     parseRectangle("C 20 5") == None
+  //         parseRectangle("R 0")    == None
+  // Note: see `parseCircle` which parse a line into `Circle`.
+  // Note: `parseRectangle` returns an `InvOption` which is like a standard `Option` but with an invariant type parameter.
+  def parseRectangle(inputLine: String): InvOption[Rectangle] =
+    ???
+
+  // 2b. Implement `parseShape` which parses a user input line into a `Shape` (`Circle` or `Rectangle`).
+  // Please REUSE `parseCircle` and `parseRectangle`.
+  def parseShape(inputLine: String): InvOption[Shape] =
+    ???
 
   object IntParser {
     def unapply(s: String): Option[Int] =
@@ -101,10 +101,11 @@ object OptionExercises {
   // 3a. Implement `filterDigits` which only keeps the digits from the list
   // such as filterDigits(List('a', '1', 'b', 'c', '4')) == List(1, 4)
   // Note: use `charToDigit`.
-  def filterDigits(xs: List[Char]): List[Int] = ???
+  def filterDigits(characters: List[Char]): List[Int] =
+    ???
 
-  def charToDigit(c: Char): Option[Int] =
-    c match {
+  def charToDigit(char: Char): Option[Int] =
+    char match {
       case '0' => Some(0)
       case '1' => Some(1)
       case '2' => Some(2)
@@ -122,18 +123,14 @@ object OptionExercises {
   // such as checkAllDigits(List('1', '2', '3')) == Some(List(1, 2, 3))
   // but     checkAllDigits(List('a', '1', 'b', 'c', '4')) == None
   // Note: you may want to use listSequence or listTraverse defined below.
-  def checkAllDigits(xs: List[Char]): Option[List[Int]] = ???
+  def checkAllDigits(characters: List[Char]): Option[List[Int]] =
+    ???
 
-  def listSequence[A](xs: List[Option[A]]): Option[List[A]] =
-    xs.foldRight(Option(List.empty[A]))(
-      (a: Option[A], acc: Option[List[A]]) => map2(a, acc)(_ :: _)
-    )
-
-  def map2[A, B, C](fa: Option[A], fb: Option[B])(f: (A, B) => C): Option[C] =
-    (fa, fb) match {
-      case (Some(a), Some(b)) => Some(f(a, b))
-      case (None, _)          => None
-      case (_, None)          => None
+  def listSequence[A](elements: List[Option[A]]): Option[List[A]] =
+    elements.foldRight(Option(List.empty[A])) {
+      case (Some(a), Some(state)) => Some(a :: state)
+      case (None, _)              => None
+      case (_, None)              => None
     }
 
   def listTraverse[A, B](xs: List[A])(f: A => Option[B]): Option[List[B]] =
