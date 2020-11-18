@@ -1190,18 +1190,11 @@ background-image: url(img/errorhandling/error-decision-tree.svg)
 background-image: url(img/errorhandling/error-decision-tree-2.svg)
 
 ---
+class: small-code
+
 # IO with Option
 
-```tut:invisible
-case class UserId(value: Long)
-case class OrderId(value: Long)
-
-case class User()
-case class Order()
-case class OrderDetails()
-```
-
-```tut:silent
+```scala
 trait OrderApi {
   def getUser(  userId: UserId ): IO[Option[User]]
   def getOrder(orderId: OrderId): IO[Option[Order]]
@@ -1216,12 +1209,16 @@ def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDe
 
 <br>
 
+.center[
 ## What is the type of user and order?
+]
 
 ---
+class: medium-code
+
 # IO with Option
 
-```tut:silent
+```scala
 trait OrderApi {
   def getUser(  userId: UserId ): IO[Option[User]]
   def getOrder(orderId: OrderId): IO[Option[Order]]
@@ -1235,9 +1232,11 @@ def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDe
 ```
 
 ---
+class: medium-code
+
 # IO with Option
 
-```tut:silent
+```scala
 trait OrderApi {
   def getUser(  userId: UserId ): IO[Option[User]]
   def getOrder(orderId: OrderId): IO[Option[Order]]
@@ -1259,9 +1258,11 @@ def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDe
 ```
 
 ---
+class: medium-code
+
 # IO with Option
 
-```tut:silent
+```scala
 trait OrderApi {
   def getUser(  userId: UserId ): IO[Option[User]]
   def getOrder(orderId: OrderId): IO[Option[Order]]
@@ -1281,18 +1282,9 @@ def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDe
 ```
 
 ---
+class: medium-code
+
 # IO with Either
-
-```tut:invisible
-sealed trait ApplicationError extends Exception
-case class UserNotFound(userId: UserId)    extends ApplicationError
-case class OrderNotFound(orderId: OrderId) extends ApplicationError
-
-trait OrderApi {
-  def getUser(  userId: UserId ): IO[Either[UserNotFound , User]]
-  def getOrder(orderId: OrderId): IO[Either[OrderNotFound, Order]]
-}
-```
 
 ```scala
 sealed trait ApplicationError `extends Exception`
@@ -1307,14 +1299,6 @@ trait OrderApi {
 
 --
 
-```tut:invisible
-def failOnLeft[E <: Exception, A](io: IO[Either[E, A]]): IO[A] =
-  io.flatMap {
-    case Left(e)  => IO.fail(e)
-    case Right(a) => IO.succeed(a)
-  }
-```
-
 ```scala
 def failOnLeft[`E <: Exception`, A](io: `IO[Either[E, A]]`): `IO[A]` =
   io.flatMap {
@@ -1325,7 +1309,7 @@ def failOnLeft[`E <: Exception`, A](io: `IO[Either[E, A]]`): `IO[A]` =
 
 --
 
-```tut:silent
+```scala
 def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDetails] =
   for {
     user  <- failOnLeft(api.getUser(userId))
@@ -1334,9 +1318,13 @@ def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDe
 ```
 
 ---
+class: medium-code
+
 # Extension methods
 
-```tut:silent
+<br>
+
+```scala
 implicit class IOEitherSyntax[E <: Exception, A](io: IO[Either[E, A]]){
   def failOnLeft: IO[A] =
     io.flatMap {
@@ -1346,7 +1334,7 @@ implicit class IOEitherSyntax[E <: Exception, A](io: IO[Either[E, A]]){
 }
 ```
 
-```tut:silent
+```scala
 def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDetails] =
   for {
     user  <- api.getUser(userId).failOnLeft
@@ -1355,27 +1343,27 @@ def getOrderDetails(api: OrderApi)(userId: UserId, orderId: OrderId): IO[OrderDe
 ```
 
 ---
-.h1[# Conclusion]
+# Conclusion
 
-.large[
-* Option and Either are the two main types to encode failures
+<br>
 
-* Try is a helpful tool to catch Exception
+.medium[
+* Option and Either are the two main types to encode runtime failures
+
+* Try is convenient to catch Exception
 
 * Enums can encode errors as precisely as we want (trade-offs)
 
-* Option and Either can be used in conjunction with IO
+* Option and Either can be used in conjunction with IO but it leads to lots of boiler plate
+  * Use Either for pure business logic
+  * Use `IO[Either]` or `IO[Option]` when error can be handled by the caller
+  * Otherwise use `IO.fail`
 ]
-
----
-# Resources and further study
-
-* [Scala Best Practices I Wish Someone'd Told Me About](https://nrinaudo.github.io/talk-scala-best-practices/#1)
 
 ---
 class: center, middle
 
-# [Module 4: Type](4-Type.html#1)
+# [Module 4: Types](4-Types.html#1)
 
 </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js">
