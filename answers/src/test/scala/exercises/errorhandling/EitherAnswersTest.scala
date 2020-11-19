@@ -110,6 +110,15 @@ class EitherAnswersTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks 
     assert(validateUser("~a", "UK") == Left(TooSmall(2)))
   }
 
+  test("validateUsernameAcc") {
+    forAll(
+      (username: String) =>
+        assert(
+          validateUsernameAcc(username) == validateUsernameAccCats(username)
+      )
+    )
+  }
+
   test("validateUserAcc") {
     assert(validateUserAcc("  foo ", "FRA") == Right(User(Username("foo"), Country.France)))
     assert(validateUserAcc("~a", "FRA") == Left(List(TooSmall(2), InvalidCharacters(List('~')))))

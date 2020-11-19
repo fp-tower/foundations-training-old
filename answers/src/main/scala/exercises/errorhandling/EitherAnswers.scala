@@ -177,6 +177,15 @@ object EitherAnswers {
     )((_, _) => Username(trimmed))
   }
 
+  def validateUsernameAccCats(username: String): Either[List[UsernameError], Username] = {
+    import cats.implicits._
+    val trimmed = username.trim
+    (
+      validateUsernameSize(trimmed).left.map(List(_)),
+      validateUsernameCharacters(trimmed).left.map(List(_))
+    ).parTupled.as(Username(trimmed))
+  }
+
   def sequenceAcc[E, A](xs: List[Either[List[E], A]]): Either[List[E], List[A]] =
     xs.foldLeft[Either[List[E], List[A]]](Right(Nil))(map2Acc(_, _)((acc, a) => a :: acc)).map(_.reverse)
 

@@ -12,15 +12,15 @@ import scala.util.Try
 
 object EitherExercises {
 
-  ////////////////////////
-  // 1. Use cases
-  ////////////////////////
+  /////////////////////////
+  // Exercise 1: Use cases
+  /////////////////////////
 
-  // 1a. Implement `getUserEmail` which looks up a user using its id, then it returns the user's email if it exists.
+  // 1a. Implement `getUserEmail` which looks up a user by id, then it returns the user's email if it exists.
   // val userMap = Map(
-  //   222 -> User(222, "john" , "j@x.com"),
-  //   123 -> User(123, "elisa", "e@y.com"),
-  //   444 -> User(444, "bob")
+  //   222 -> User(222, "john" , Email("j@x.com")),
+  //   123 -> User(123, "elisa", Email("e@y.com")),
+  //   444 -> User(444, "bob", None)
   // )
   // getUserEmail(123, userMap) == Right("e@y.com")
   // getUserEmail(111, userMap) == Left(UserNotFound(444))
@@ -51,7 +51,8 @@ object EitherExercises {
 
   // 1c. Implement `submit` which encodes the order transition between `Checkout` to `Submitted`.
   // `submit` is successful if the order has a `Checkout` status and an address.
-  // If `checkout` succeeds, it moves the status from `Checkout` to `Submitted` and stores the submitted timestamp.
+  // If `checkout` succeeds, it moves the status from `Checkout` to `Submitted`
+  // and stores the submitted timestamp.
   // Bonus: encode the error with an enum.
   def submit(order: Order, now: Instant): Either[String, Order] = ???
 
@@ -60,9 +61,9 @@ object EitherExercises {
   // Try to find out all error scenarios and eventually encode them with an enum.
   def deliver(order: Order, now: Instant): Either[String, (Order, Duration)] = ???
 
-  //////////////////////////////////
-  // 2. Import code with Exception
-  //////////////////////////////////
+  //////////////////////////////////////
+  // Exercise 2: Working with Exception
+  //////////////////////////////////////
 
   // 2a. Implement `parseUUID` which safely parses a String into UUID using `UUID.fromString`.
   // `UUID.fromString` is unsafe, it throws an `Exception` if the input string is invalid.
@@ -70,9 +71,9 @@ object EitherExercises {
   // or using `Try(...)` from `scala.util`
   def parseUUID(uuidStr: String): Either[Throwable, UUID] = ???
 
-  //////////////////////////////////
-  // 3. Error ADT
-  //////////////////////////////////
+  //////////////////////////
+  // Exercise 3: Error ADT
+  //////////////////////////
 
   // 3a. Implement `validateUsername` by trimming an input String and then applying the following two validations:
   // `validateUsernameSize` and `validateUsernameCharacters`
