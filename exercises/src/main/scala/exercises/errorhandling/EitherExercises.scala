@@ -5,7 +5,6 @@ import java.util.UUID
 
 import exercises.errorhandling.EitherExercises.CountryError.{InvalidFormat, NotSupported}
 import exercises.errorhandling.EitherExercises.UsernameError.{InvalidCharacters, TooSmall}
-import exercises.errorhandling.EitherExercises.UserEmailError.{EmailNotFound, UserNotFound}
 import exercises.errorhandling.OptionExercises.{Email, UserId}
 
 import scala.util.Try

@@ -53,6 +53,9 @@ object IOAnswers {
     def fromTry[A](fa: Try[A]): IO[A] =
       fa.fold(fail, succeed)
 
+    def fromEither[A](fa: Either[Throwable, A]): IO[A] =
+      fa.fold(fail, succeed)
+
     def sleep(duration: FiniteDuration): IO[Unit] =
       effect(Thread.sleep(duration.toMillis))
 

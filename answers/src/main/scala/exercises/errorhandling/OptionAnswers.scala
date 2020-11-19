@@ -1,9 +1,7 @@
 package exercises.errorhandling
 
 import exercises.errorhandling.OptionAnswers.Shape.{Circle, Rectangle}
-import exercises.action.IOAsync
 
-import scala.concurrent.duration._
 import scala.util.Try
 
 object OptionAnswers {
@@ -117,23 +115,4 @@ object OptionAnswers {
   def listTraverse[A, B](xs: List[A])(f: A => Option[B]): Option[List[B]] =
     listSequence(xs.map(f))
 
-  def sendUserEmail(db: DbApi, emailClient: EmailClient)(userId: UserId, emailBody: String): IOAsync[Unit] =
-    db.getAllUsers.flatMap { users =>
-      users.get(userId) match {
-        case None => IOAsync.sleep(100.millis) *> sendUserEmail(db, emailClient)(userId, emailBody)
-        case Some(user) =>
-          user.email match {
-            case None        => IOAsync.fail(new Exception(s"User $userId doesn't have an email"))
-            case Some(email) => emailClient.sendEmail(email, emailBody)
-          }
-      }
-    }
-
-  trait DbApi {
-    def getAllUsers: IOAsync[Map[UserId, User]]
-  }
-
-  trait EmailClient {
-    def sendEmail(email: Email, body: String): IOAsync[Unit]
-  }
 }
