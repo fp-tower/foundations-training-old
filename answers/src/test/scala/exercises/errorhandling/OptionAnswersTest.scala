@@ -2,11 +2,8 @@ package exercises.errorhandling
 
 import exercises.errorhandling.OptionAnswers.Role._
 import exercises.errorhandling.OptionAnswers._
-import exercises.action.{IOAsync, IOAsyncRef}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-
-import scala.concurrent.duration._
 
 class OptionAnswersTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks {
 
@@ -50,40 +47,6 @@ class OptionAnswersTest extends AnyFunSuite with ScalaCheckDrivenPropertyChecks 
   test("checkAllDigits") {
     assert(checkAllDigits("1234".toList) == Some(List(1, 2, 3, 4)))
     assert(checkAllDigits("a1bc4".toList) == None)
-  }
-
-  test("sendUserEmail") {
-    def inMemoryDb(ref: IOAsyncRef[Map[UserId, User]]): DbApi = new DbApi {
-      def getAllUsers: IOAsync[Map[UserId, User]] = ref.get
-    }
-    def inMemoryClient(ref: IOAsyncRef[List[(Email, String)]]): EmailClient = new EmailClient {
-      def sendEmail(email: Email, body: String): IOAsync[Unit] =
-        ref.update(_ :+ (email, body))
-    }
-
-    val ec = scala.concurrent.ExecutionContext.global
-
-    val test = for {
-      usersRef  <- IOAsyncRef(Map.empty[UserId, User])
-      emailsRef <- IOAsyncRef(List.empty[(Email, String)])
-      db     = inMemoryDb(usersRef)
-      client = inMemoryClient(emailsRef)
-      userId = UserId(10)
-      email  = Email("j@foo.com")
-      body   = "Hello World"
-      user   = User(userId, "John", Some(email))
-      waitEmail     <- sendUserEmail(db, client)(userId, body).start(ec)
-      _             <- IOAsync.sleep(200.millis)
-      expectNoEmail <- emailsRef.get
-      _             <- usersRef.update(_ + (userId -> user))
-      _             <- waitEmail
-      expectEmail   <- emailsRef.get
-    } yield {
-      assert(expectNoEmail == Nil)
-      assert(expectEmail == List(email -> body))
-    }
-
-    test.unsafeRun()
   }
 
 }

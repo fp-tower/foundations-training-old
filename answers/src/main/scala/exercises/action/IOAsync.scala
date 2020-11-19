@@ -56,6 +56,9 @@ sealed trait IOAsync[+A] { self =>
   def handleErrorWith[B >: A](f: Throwable => IOAsync[B]): IOAsync[B] =
     attempt.flatMap(_.fold(f, succeed))
 
+  def recoverErrorWith[B >: A](f: PartialFunction[Throwable, IOAsync[B]]): IOAsync[B] =
+    attempt.flatMap(_.fold(f.applyOrElse(_, IOAsync.fail), succeed))
+
   def retryOnce: IOAsync[A] =
     handleErrorWith(_ => this)
 

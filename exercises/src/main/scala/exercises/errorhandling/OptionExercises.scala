@@ -140,22 +140,7 @@ object OptionExercises {
   // 4. Limitation
   ///////////////////
 
-  // 4a. Implement `sendUserEmail` which attempts to send an email to a user.
-  // If the user is missing from the db, we will retry in 100 millis,
-  // but if a user exists and it doesn't have an email address, then we fail the IO.
-  // Can you reuse `getUserEmail`? Why?
-  def sendUserEmail(db: DbApi, emailClient: EmailClient)(userId: UserId, emailBody: String): IO[Unit] =
-    ???
-
-  trait DbApi {
-    def getAllUsers: IO[Map[UserId, User]]
-  }
-
-  trait EmailClient {
-    def sendEmail(email: Email, body: String): IO[Unit]
-  }
-
-  // 4b. Implement `parsingJsonMessage` which attempts to parse a `String` into `Json` and returns either
+  // 4a. Implement `parsingJsonMessage` which attempts to parse a `String` into `Json` and returns either
   // a successful message in case of success (e.g. "OK") or
   // a descriptive error message in case of a failure (e.g. "invalid syntax at line 3: `foo :-: 4`'").
   // Note: assume you can only use `parseJson`.
