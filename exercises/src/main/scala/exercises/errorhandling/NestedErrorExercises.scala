@@ -30,7 +30,7 @@ object NestedErrorExercises {
   }
 
   class NotificationApi(db: Db, emailClient: EmailClient) {
-    def sendDeliveredMessage(orderId: OrderId): IO[Unit] =
+    def sendDeliveredMessage(orderId: OrderId) =
       ???
   }
 
