@@ -1,20 +1,14 @@
 package exercises.errorhandling
 
+import java.time.Instant
+
 import exercises.action.IOExercises.IO
 
 object NestedErrorExercises {
 
-  // 1. Implement `NotificationApi#sendDeliveredMessage` which:
-  // * fetch from DB an order
-  // * fetch from DB user who placed the order
-  // * send email to this user saying "Order ORDER_ID delivered"
-  // If the email client is not responding retry at most 3 times
-  // If the email client fail, log the last error but do not fail the action
-  //
-  // Which return type would you use? Why?
-
   case class User(id: UserId, name: String, email: Option[Email])
   case class Order(id: OrderId, client: UserId, status: String, total: Double)
+  case class Invoice(orderId: OrderId, client: User, total: Double)
 
   case class OrderId(value: Long)
   case class UserId(value: Long)
@@ -23,15 +17,38 @@ object NestedErrorExercises {
   trait Db {
     def getUser(userId: UserId): IO[Option[User]]
     def getOrder(orderId: OrderId): IO[Option[Order]]
+    def upsertOrder(order: Order): IO[Unit]
+  }
+
+  class Api(db: Db) {
+    // 1. Implement `generateInvoice` which:
+    // * fetch an order from the DB.
+    // * fetch the user who placed the order from the DB.
+    // * Produce an invoice by combining Order and User.
+    //
+    // Which return type would you use? Why?
+    def generateInvoice(orderId: OrderId) = ???
+
+    // 2. Implement `confirm` which:
+    // * fetch an order from the DB.
+    // * update the Order using `OrderService#confirm`.
+    // * save the updated order to the DB.
+    // * send an email using `EmailClient` to the user who placed the order
+    //   saying "Order ORDER_ID confirmed".
+    //   If the email client is not responding retry at most 3 times, if it still fails, log the error.
+    // Note:
+    def confirm(orderId: OrderId): IO[Unit] =
+      ???
   }
 
   trait EmailClient {
     def sendEmail(email: Email, body: String): IO[Unit]
   }
 
-  class NotificationApi(db: Db, emailClient: EmailClient) {
-    def sendDeliveredMessage(orderId: OrderId) =
-      ???
+  trait OrderService {
+    def submit(order: Order, now: Instant): Either[OrderError, Order]
+    def confirm(order: Order, now: Instant): Either[OrderError, Order]
   }
 
+  sealed trait OrderError
 }
