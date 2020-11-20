@@ -17,15 +17,15 @@ object TypeApp extends App {
 object TypeExercises {
 
   ////////////////////////
-  // 1. Misused answers.types
+  // 1. Misused types
   ////////////////////////
 
-  // 1a. Implement `compareChar` that indicates if `c1` is smaller, equal to or larger than `c2`
+  // 1a. Implement `compareChar` that indicates if `char1` is smaller, equal to or larger than `char2`
   // such as compareChar('a', 'c') == -1
   //         compareChar('c', 'c') ==  0
   //         compareChar('c', 'a') ==  1
   // What is wrong with this answers.function? How could you improve it?
-  def compareChar(c1: Char, c2: Char): Int = ???
+  def compareChar(char1: Char, char2: Char): Int = ???
 
   // 1b. Implement `mostRecentBlogs` that returns the `n` most recent blog posts
   // such as mostRecentBlogs(1)(List(
@@ -40,7 +40,12 @@ object TypeExercises {
   // 1c. Implement `User#address` that returns the full address for a User (e.g. to send a parcel)
   // such as User("John Doe", Some(108), Some("Cannon Street"), Some("EC4N 6EU")) == "108 Canon Street EC4N 6EU"
   // What is wrong with this answers.function? How could you improve it?
-  case class User(name: String, streetNumber: Option[Int], streetName: Option[String], postCode: Option[String]) {
+  case class User(
+    name: String,
+    streetNumber: Option[Int],
+    streetName: Option[String],
+    postCode: Option[String]
+  ) {
     def address: String = ???
   }
 
@@ -55,7 +60,7 @@ object TypeExercises {
 
   // 1e. Implement `createTicket` that instantiates a Ticket with 0 story point,
   // a random ticket id (see `genTicketId`) and the current time (see `readNow`).
-  // What is wrong with this answers.function? How could you improve it?
+  // How could you improve this function signature?
   def createTicket(title: String): IO[Ticket] = ???
 
   def genTicketId: IO[TicketId] = IO.effect(TicketId(UUID.randomUUID()))
@@ -68,7 +73,7 @@ object TypeExercises {
   // 2. Data Encoding
   ////////////////////////
 
-  // 2a. Create answers.types that encode the following business requirements:
+  // 2a. Create types that encode the following business requirements:
   // An order contains an order id (UUID), a created timestamp (Instant), an order status, and a basket of items.
   // An order status is either a draft, checkout, submitted or delivered.
   // An item consists of an item id (UUID), a quantity and a price.
@@ -245,8 +250,8 @@ object TypeExercises {
   ////////////////////////
 
   // 6a. In basic algebra, a * 1 = 1 * a = a and a + 0 = 0 + a = a (we say that 1 is the unit of * and 0 is the unit of +).
-  // Is it also true with answers.types?
-  // To prove that two answers.types A and B are equivalent you need to provide a pair of functions `to` and `from`
+  // Is it also true with types?
+  // To prove that two types A and B are equivalent you need to provide a pair of functions `to` and `from`
   // such as for all a: A, from(to(a)) == a, and equivalent for B.
   def aUnitToA[A]: Iso[(A, Unit), A] =
     Iso[(A, Unit), A](
@@ -272,6 +277,6 @@ object TypeExercises {
       _ => ???
     )
 
-  // 6e. Can you think of any other properties that answers.types and algebra have in common?
+  // 6e. Can you think of any other properties that types and algebra have in common?
 
 }

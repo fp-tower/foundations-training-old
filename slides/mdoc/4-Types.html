@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Types</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+<textarea id="source">
+
+background-image: url(img/fp-tower/website-background.svg)
+
+class: center, middle, white
+
+.title[Types]
+
+<div class="watermark">
+  <a href="https://github.com/fp-tower">
+    <img src="img/fp-tower/grey-4-fp-watermark-image-raster-transparent-file.png" alt="logo" style="width:200px;"/>
+  </a>
+</div>
+
+---
+class: medium-code
+
+# Cost of misusing types
+
+```scala mdoc:silent
+case class Country(value: String)
+
+val UK      = Country("United Kingdom")
+val France  = Country("France")
+val Germany = Country("Germany")
+```
+
+--
+
+```scala mdoc:silent
+def getCurrency(country: Country): String = ???
+```
+
+such as
+
+```scala
+getCurrency(Country("United Kingdom")) == "GBP"
+getCurrency(Country("France"))         == "EUR"
+getCurrency(Country("Germany"))        == "EUR"
+```
+
+---
+class: medium-code
+
+# Cost of misusing types
+
+```scala mdoc:reset:invisible
+case class Country(value: String)
+
+def getCurrency(country: Country): Option[String] =
+  country.value match {
+    case "United Kingdom"     => Some("GBP")
+    case "France" | "Germany" => Some("EUR")
+    case _                    => None
+  }
+```
+
+```scala
+def getCurrency(country: Country): `Option`[String] =
+  country.value match {
+    case "United Kingdom"     => Some("GBP")
+    case "France" | "Germany" => Some("EUR")
+    case _                    => None
+  }
+```
+
+--
+
+```scala mdoc
+getCurrency(Country("UK"))
+
+getCurrency(Country("GBR"))
+
+getCurrency(Country("Royaume-Uni"))
+```
+
+---
+class: medium-code
+
+# Cost of misusing types
+
+```scala mdoc:reset:silent
+sealed trait Country
+
+object Country {
+  case object UnitedKingdom extends Country
+  case object France        extends Country
+  case object Germany       extends Country
+}
+```
+
+```scala mdoc:silent
+import Country._
+
+def getCurrency(country: Country): String =
+  country match {
+    case UnitedKingdom    => "GBP"
+    case France | Germany => "EUR"
+  }
+```
+
+```scala mdoc:silent
+def parseCountry(country: String): Option[Country] = ???
+```
+
+---
+class: medium-code
+
+# Cost of misusing types
+
+.forty-seven-left[
+```scala mdoc:reset:silent
+sealed trait Country
+object Country {
+  case object UnitedKingdom extends Country
+  case object France        extends Country
+  case object Germany       extends Country
+}
+```
+]
+
+.forty-seven-right[
+```scala mdoc:silent
+sealed trait Currency
+object Currency {
+  case object BritishPound extends Currency
+  case object Euro         extends Currency
+}
+```
+]
+
+<br><br><br><br><br><br><br><br>
+
+```scala mdoc:silent
+import Country._, Currency._
+
+def getCurrency(country: Country): Currency =
+  country match {
+    case UnitedKingdom    => BritishPound
+    case France | Germany => Euro
+  }
+```
+
+---
+# Plan
+
+<br>
+
+.large[
+* What is the cost of misusing types
+]
+
+.large[
+* How to encode data precisely
+]
+
+---
+background-image: url(img/fp-tower/website-background-white.svg)
+
+class: middle, white
+
+# TypeExercises.scala
+
+## Exercises 1
+
+---
+class: center, middle
+
+# Type should .hl[exactly] fit business requirements
+
+---
+class: center, middle
+
+# Imprecise data lead to errors
+# and misleading documentation
+
+---
+class: center, middle
+
+# How should we encode data?
+
+---
+# Algebraic Data Type (ADT)
+
+.large[
+* OR, a `ConfigValue` is
+   * a `String` .hl[OR]
+   * an `Int` .hl[OR]
+   * `Empty`
+]
+
+.large[
+* AND, a `User` is
+   * a `userId` .hl[AND]
+   * a `name` .hl[AND]
+   * an `address`
+]
+
+---
+# OR
+
+<br>
+
+.large[
+* a `Boolean` is `true` .hl[OR] `false`
+* an Int is a `-10` .hl[OR] `0` .hl[OR] `1` .hl[OR] ...
+* a `DayOfTheWeek` is `Monday` .hl[OR] `Tuesday` .hl[OR] `Wednesday` .hl[OR] ...
+* an `Option` is a `Some` .hl[OR] a `None`
+* a `Json` is a `JsonNumber` .hl[OR] a `JsonString` .hl[OR] a `JsonArray` .hl[OR] a `JsonObject` .hl[OR] ...
+]
+
+---
+class: center, middle
+
+# How should we encode OR?
+### A `ConfigValue` is a `String` OR an `Int` OR `Empty`
+
+---
+# OR Encoding
+
+```tut:silent
+sealed trait ConfigValue
+
+object ConfigValue {
+  case class  ConfigString(value: String) extends ConfigValue
+  case class  ConfigNumber(value: Double) extends ConfigValue
+  case object ConfigEmpty extends ConfigValue
+}
+```
+
+### In Scala 3
+
+```scala
+enum ConfigValue {
+  case ConfigString(value: String)
+  case ConfigNumber(value: Double)
+  case ConfigEmpty
+}
+```
+
+---
+# AND
+
+<br>
+
+.large[
+* a `User` is a `userId` .hl[AND] a `name` .hl[AND] an `address`
+* a `ZonedDateTime` is a `dateTime` .hl[AND] a `timeZone`
+* a `NonEmptyList` is a `head` .hl[AND] a `tail`
+* a `Tuple2` is a `_1` .hl[AND] a `_2`
+]
+
+---
+class: center, middle
+
+# How should we encode AND?
+### A `User` is a `userId` AND a `name` AND an `address`
+
+---
+# AND Encoding
+
+```scala mdoc:invisible
+import java.util.UUID
+
+case class Address(streetNumber: Int, streetName: String, postCode: String)
+
+case class User(userId: UUID, name: String, address: Address)
+```
+
+```scala
+import java.util.UUID
+
+case class User(userId: UUID, name: String, address: Address)
+
+case class Address(streetNumber: Int, streetName: String, postCode: String)
+```
+
+```scala mdoc
+User(UUID.randomUUID(), "John Doe", Address(108, "Cannon Street", "EC4N 6EU"))
+```
+
+---
+# Algebraic data types == mix AND and OR
+
+```scala
+sealed trait Role
+
+object Role {
+  case class Reader(accountId: Long, premiumUser: Boolean) extends Role
+  case class Editor(accountId: Long, favoriteFont: Option[String]) extends Role
+  case object Admin extends Role
+}
+
+case class User(userId: Long, role: Role, address: Option[Address])
+```
+
+---
+background-image: url(img/fp-tower/website-background-white.svg)
+
+class: middle, white
+
+# TypeExercises.scala
+
+## Exercises 2
+
+---
+background-image: url(img/fp-tower/website-background.svg)
+
+class:  middle
+
+.forty-seven-left[
+## .white[Website: &nbspwww.fp-tower.com]
+
+## .white[Email: &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp julien@fp-tower.com]
+
+## .white[Twitter: &nbsp&nbsp@JulienTruffaut]
+]
+
+</textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>
+    var slideshow = remark.create({
+        ratio: "16:9",
+        slideNumberFormat: '%current%',
+        // highlightStyle: "github",
+        highlightLines: true,
+        highlightSpans: true,
+    });
+</script>
+</body>
+</html>
