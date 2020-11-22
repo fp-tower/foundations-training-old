@@ -200,7 +200,6 @@ object FunctionExercises {
         case None             => state = Some(element)
         case Some(currentMax) => if (currentMax < element) state = Some(element)
       }
-
     state
   }
 

@@ -971,28 +971,12 @@ background-image: url(img/function/exception.svg)
 # Partial function
 
 ---
-# Partial function
-
-<br>
-
-```scala mdoc:reset:silent
-def head(list: List[Int]): Int =
-  list match {
-    case x :: xs => x
-  }
-```
-
-```scala mdoc:crash
-head(Nil)
-```
-
----
 # Exception
 
 ```scala mdoc:silent
-case class Item(id: Long, unitPrice: Double, quantity: Int)
-
 case class Order(status: String, basket: List[Item])
+
+case class Item(id: Long, unitPrice: Double, quantity: Int)
 
 def submit(order: Order): Order =
   order.status match {
@@ -1108,9 +1092,9 @@ class: center, middle
 
 <br>
 
-## 1. total (not partial, no exception)
+## 1. total (no exception)
 
-## 2. deterministic (not nondeterministic)
+## 2. deterministic
 
 ## 3. no mutation
 
@@ -1208,7 +1192,7 @@ class InMemoryOrderApi(orders: Map[OrderId, Order]) extends OrderApi { ... }
 def getAll(api: OrderApi)(orderIds: List[OrderId]): Future[List[Order]] =
   api match {
     case x: DbOrderApi       => ???
-    case x: OrderApiWithAuth => ???
+    case x: InMemoryOrderApi => ???
     case _                   => ???
   }
 ```
@@ -1328,6 +1312,15 @@ class: middle, white
 class: center, middle
 
 # Why should we use the functional subset?
+
+---
+class: center, middle
+
+# What's the most difficult?
+
+## 1. Create a program from scratch
+
+## 2. Update an existing program
 
 ---
 # 1. Refactoring: remove unused code
