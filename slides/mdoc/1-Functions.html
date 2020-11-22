@@ -789,13 +789,6 @@ def format[A](value: A): String
 ```
 
 ---
-class: center, middle
-
-# Parametric polymorphism (`map`)
-# !=
-# Ad hoc polymorphism (`format`)
-
----
 # How can we implement `map`?
 
 <br>
@@ -820,50 +813,6 @@ def map[From, To](list: List[From], update: From => To): List[To]
 
 1. Return an non empty list with values produced by update
 ]
-
----
-# Does it compile?
-
-<br>
-
-```scala
-def map[From, To](list: List[From], update: From => To): List[To] =
-  list
-```
-
----
-# Does it compile?
-
-<br>
-
-```scala mdoc:reset:fail
-def map[From, To](list: List[From], update: From => To): List[To] =
-  list
-```
-
----
-# Does it compile?
-
-<br>
-
-```scala
-def map[A](list: List[A], update: A => A): List[A] =
-  list
-
-// success
-```
-
----
-# Does it compile?
-
-<br>
-
-```scala
-def map(list: List[Int], update: Int => Int): List[Int] =
-  List(1, 2, 3)
-
-// success
-```
 
 ---
 # How can we test `map`?

@@ -23,32 +23,17 @@ object FunctionExercises {
   // Exercise 1: String API with higher-order functions
   /////////////////////////////////////////////////////
 
-  // 1a. Implement `selectDigits` which iterates over a String and only keep the characters that are digits.
-  // such as selectDigits("hello4world-80") == "480"
-  // but     selectDigits("welcome") == ""
-  // Note: You can use `filter` method from `String`, also check out the API of `Char`
-  def selectDigits(text: String): String =
-    ???
-
-  // 1b. Implement `secret` which transforms all characters in a String to '*'
+  // 1a. Implement `secret` which transforms all characters in a String to '*'
   // such as secret("Welcome123") == "**********"
   // Note: Try to use a higher-order function from the String API
+  //       You can test this function in FunctionExercisesTest.scala
   def secret(text: String): String =
     ???
 
-  // 1c. Implement `isValidUsernameCharacter` which checks if a character is suitable for a username.
-  // We accept:
-  // - lower and upper case letters
-  // - digits
-  // - special characters: '-' and '_'
-  // For example, isValidUsernameCharacter('3') == true
-  //              isValidUsernameCharacter('a') == true
-  // but          isValidUsernameCharacter('^') == false
-  // Note: You might find some useful helper methods on `char`.
   def isValidUsernameCharacter(char: Char): Boolean =
-    ???
+    char.isLetterOrDigit || char == '-' || char == '_'
 
-  // 1d. Implement `isValidUsername` which checks that all the characters in a String are valid
+  // 1b. Implement `isValidUsername` which checks that all the characters in a String are valid
   // such as isValidUsername("john-doe") == true
   // but     isValidUsername("*john*") == false
   // Note: Try to use `isValidUsernameCharacter` and a higher-order function from the String API.

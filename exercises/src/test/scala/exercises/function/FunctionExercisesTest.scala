@@ -15,16 +15,21 @@ class FunctionExercisesTest extends AnyFunSuite with ScalaCheckDrivenPropertyChe
   /////////////////////////////////////////////////////
 
   // replace `ignore` by `test` to enable the test
-  ignore("selectDigits examples") {
-    assert(selectDigits("hello4world-80") == "480")
-    assert(selectDigits("welcome") == "")
+  ignore("secret examples") {
+    assert(secret("hello world") == "***********")
+    assert(secret("") == "")
   }
 
   // replace `ignore` by `test` to enable the test
-  ignore("selectDigits length is smaller") {
+  ignore("secret doesn't change the length") {
     forAll { (text: String) =>
-      assert(selectDigits(text).length <= text.length)
+      assert(secret(text).length == text.length)
     }
+  }
+
+  ignore("isValidUsername") {
+    assert(isValidUsername("john-doe"))
+    assert(!isValidUsername("*john*"))
   }
 
   ///////////////////////
